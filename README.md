@@ -54,3 +54,6 @@ A question or action node can carry `"howto": ["...", "..."]`. The step then sho
 
 ## Links inside steps
 Any step, help line or "Help me do this" line can hold a tappable link, written as `[label](https://address)`, e.g. `"Check [Package Tracker](https://...) to make sure the ticket is deployable."` It opens in a new tab. If a step sends the operator to a page, put the link in that step. Only `https://` addresses become links.
+
+## Procedures in the T/S panel
+The T/S panel lists every tree with `"role": "sequence"` (in manifest order), then the troubleshooting menu, `tapp_step.json`, titled "T/S Something Else". To add a procedure, give its tree `"role": "sequence"` and add the file to `manifest.json`. A tree-level `"tools"` list hides it for operators on the other tool. An action can set `"verify": {"text": "Did the verification pass?", "yes": "Yes, it passed", "no": "No, it failed"}` to replace the standard "Did this resolve it?" follow-up.
