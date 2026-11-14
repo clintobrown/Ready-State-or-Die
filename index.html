@@ -123,6 +123,12 @@ ol.steps li{margin:6px 0;padding-left:4px}
 .term{border-radius:14px;padding:20px 18px;font-size:32px;font-weight:900;line-height:1.1}
 .term.ok{background:var(--ok);color:var(--ok-fg)} .term.bad{background:var(--bad);color:var(--bad-fg)}
 .term small{display:block;font-size:20px;font-weight:700;margin-top:8px}
+details.howto{margin-top:12px}
+details.howto>summary{list-style:none;cursor:pointer}
+details.howto>summary::-webkit-details-marker{display:none}
+details.howto[open]>summary{border-style:dashed}
+.how{margin:12px 0 0;padding-left:26px;font-size:18px;line-height:1.4}
+.how li{margin:8px 0}
 a.btn{display:flex;align-items:center;justify-content:center;text-decoration:none;text-align:center}
 pre.sum.phrase{font-size:21px;line-height:1.3;max-height:none}
 pre.sum{white-space:pre-wrap;word-break:break-word;margin:0;font:600 16px/1.45 "Roboto Mono",ui-monospace,Menlo,monospace;background:var(--card);border:3px solid var(--line);border-radius:12px;padding:12px;max-height:42vh;overflow:auto}
@@ -232,7 +238,7 @@ const isEsc = t => ESC.includes(t);
 const ESC_LABEL = { ESCALATE_VRE:'Escalate to VRE', ESCALATE_TS:'Open a TS thread', ESCALATE_DISPATCH:'Contact Dispatch' };
 const SAFETY_RE = /\b(bypass\w*|override\w*|defeat\w*|jumper\w*|disable\w*\s+(?:the\s+)?(?:interlock|safety|check|alarm|e-?stop)\w*|ignore\w*\s+(?:the\s+|any\s+)?(?:fault|warning|alarm|interlock|check)\w*|skip\w*\s+(?:the\s+)?(?:check|checklist|sop|inspection|pre-?trip)\w*)\b/i;
 function nodeTexts(n){
-  const out=[n.text,n.help,n.caution,n.handoffNote,n.placeholder,n.done_when,n.phrase,n.link&&n.link.label,...[].concat(n.details||[]),...(n.steps||[]),...(n.options||[]).map(o=>o.label),...(n.options||[]).map(o=>o.issue)];
+  const out=[n.text,n.help,n.caution,n.handoffNote,n.placeholder,n.done_when,n.phrase,n.link&&n.link.label,...[].concat(n.howto||[]),...[].concat(n.details||[]),...(n.steps||[]),...(n.options||[]).map(o=>o.label),...(n.options||[]).map(o=>o.issue)];
   (n.variants||[]).forEach(v=>out.push(v.text,v.help,v.caution,...(v.steps||[])));
   return out.filter(Boolean);
 }
@@ -656,6 +662,7 @@ function entryBody(){
 }
 
 const resumes = n => !!(n.resolvedNext && (()=>{ const t=getNode(S.s.cur.tree,n.resolvedNext); return t && t.type!=='terminal'; })()) || !!(S.s.calls && S.s.calls.length);
+const howBtn = n => [].concat(n.howto||[]).length ? `<details class="howto"><summary class="btn sm">Help me do this</summary><ol class="how">${[].concat(n.howto).map(x=>`<li>${esc(x)}</li>`).join('')}</ol></details>` : '';
 const linkBtn = n => n.link && /^https:\/\//.test(n.link.url||'') ? `<a class="btn sm" href="${esc(n.link.url)}" target="_blank" rel="noopener" data-act="openLink">${esc(n.link.label)} ↗</a><p class="help">Opens in a new tab and copies the truck ID, ready to paste into the search.</p>` : '';
 const copyLabel = () => S.s && S.s.outcome==='ESCALATE_DISPATCH' ? 'Copy message for Dispatch' : 'Copy for TS thread';
 function runBody(){
@@ -672,14 +679,14 @@ function runBody(){
         ${n.tapp_changed?`<span class="badge">Updated TApp: this screen changed</span>`:''}
         <h1 class="q">${esc(v.text)}</h1>
         ${v.help?`<p class="help">${esc(v.help)}</p>`:''}
-        ${linkBtn(n)}
+        ${linkBtn(n)}${howBtn(n)}
         <div class="done"><b>Done when</b>${esc(v.done_when)}</div>
         ${phBanner(n)}
         <div class="answers">${opts.map(o=>`<button class="btn ${cls(o)}" data-act="ans" data-arg="${o._i}">${esc(o.label)}</button>`).join('')}</div>`;
     }
     return `${phBanner(n)}<p class="step-no">Question ${qn}</p><h1 class="q">${esc(v.text)}</h1>
       ${v.help?`<p class="help">${esc(v.help)}</p>`:''}
-      ${linkBtn(n)}
+      ${linkBtn(n)}${howBtn(n)}
       <div class="answers">${opts.map(o=>`<button class="btn ans" data-act="ans" data-arg="${o._i}">${esc(o.label)}</button>`).join('')}</div>`;
   }
   if(n.type==='input'){
@@ -700,7 +707,7 @@ function runBody(){
       <h1 class="q">${esc(v.text)}</h1>
       ${(v.steps||[]).length?`<ol class="steps">${v.steps.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`:''}
       ${v.caution?`<div class="caution">${esc(v.caution)}</div>`:''}
-      ${linkBtn(n)}</div></section>
+      ${linkBtn(n)}${howBtn(n)}</div></section>
       <div class="answers"><button class="btn sig" data-act="done">${esc(v.doneLabel||'Done, I did this')}</button><button class="btn sm" data-act="cant">I can't do this step</button></div>`;
   }
   if(n.type==='terminal' && n.terminal==='RESOLVED'){

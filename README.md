@@ -48,3 +48,6 @@ When a run ends in an escalation, the operator sees two boxes, each with its own
 
 ## Link buttons (e.g. Open ATMS)
 A question or action node can carry `"link": {"label": "Open ATMS", "url": "https://..."}`. The step then shows a button that opens that address in a new tab and copies the run's truck ID, so the operator can paste it straight into the search. The app does not read anything from the linked site.
+
+## "Help me do this" button
+A question or action node can carry `"howto": ["...", "..."]`. The step then shows a **Help me do this** button; tapping it opens a numbered list under the step. Use it for the detail a new operator needs and an experienced one doesn't: which screen or field to open, what a correct value looks like, and what the common wrong ones look like. Keep the main `steps` short and put the detail here.
