@@ -3,7 +3,7 @@
   "id": "calibration",
   "title": "Calibration failure",
   "role": "category",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "status": "DRAFT",
   "sourceDocs": [
     "DTP TS tickets via Glean, Sep–Oct 2026"
@@ -66,7 +66,7 @@
       "short": "Cleaned + rerun",
       "text": "Clean the failed sensor, then re-run calibration once",
       "steps": [
-        "Clean the sensor named in the failure per your sensor-cleaning SOP.",
+        "Clean the sensor named in the failure per your [sensor-cleaning SOP](https://sites.google.com/aurora.tech/procedures/home-v2).",
         "Check nothing is blocking that sensor or the calibration targets.",
         "Re-run calibration from the tool."
       ],

@@ -3,7 +3,7 @@
   "id": "tapp_step",
   "title": "Start here",
   "role": "category",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "status": "DRAFT",
   "sourceDocs": [
     "DTP TS tickets via Glean, Aug–Oct 2026"
@@ -98,7 +98,7 @@
       "short": "PBT reset",
       "text": "Do the PBT reset TApp is asking for",
       "steps": [
-        "Perform the PBT reset per SOP.",
+        "Perform the PBT reset per [SOP](https://sites.google.com/aurora.tech/procedures/home-v2).",
         "Retry the step."
       ],
       "source": "TS: DTP-111734, DTP-108520",

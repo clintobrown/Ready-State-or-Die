@@ -3,7 +3,7 @@
   "id": "compute_ready",
   "title": "No ready state (compute or checklist faults)",
   "role": "category",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "status": "DRAFT",
   "sourceDocs": [
     "DTP TS tickets via Glean, Aug–Oct 2026",
@@ -99,7 +99,7 @@
       "short": "Peplink cycled",
       "text": "Cycle the Peplink, if that's a VO task where you are",
       "steps": [
-        "Power-cycle the Peplink per SOP.",
+        "Power-cycle the Peplink per [SOP](https://sites.google.com/aurora.tech/procedures/home-v2).",
         "Wait for the LTE checklist to clear, then retry ready state."
       ],
       "source": "TS: DTP-105363, DTP-106551",
@@ -131,7 +131,7 @@
       "short": "Drove loop",
       "text": "Drive a localization loop",
       "steps": [
-        "Drive the approved loop in manual per SOP.",
+        "Drive the approved loop in manual per [SOP](https://sites.google.com/aurora.tech/procedures/home-v2).",
         "Watch whether the pose checklists clear."
       ],
       "source": "TS: DTP-109224, DTP-112417",
@@ -144,7 +144,7 @@
       "short": "Atlas check",
       "text": "Check the atlas setting on the VO ticket",
       "steps": [
-        "Confirm the ticket's Atlas view matches where the truck physically is.",
+        "Confirm the [VO ticket](https://jira.int.aurora.tech/)'s Atlas view matches where the truck physically is.",
         "If it doesn't, it needs fixing before anything else will work. Note it for the VRE."
       ],
       "source": "TS: DTP-112429",
@@ -157,7 +157,7 @@
       "short": "PBT reset",
       "text": "Do the PBT reset the tool is asking for",
       "steps": [
-        "Perform the PBT reset per SOP.",
+        "Perform the PBT reset per [SOP](https://sites.google.com/aurora.tech/procedures/home-v2).",
         "Retry ready state or the launch step."
       ],
       "source": "TS: DTP-111734, DTP-112726",

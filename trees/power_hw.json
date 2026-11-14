@@ -3,7 +3,7 @@
   "id": "power_hw",
   "title": "Power, compute, RSI or ABS light",
   "role": "category",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "status": "DRAFT",
   "sourceDocs": [
     "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), docs.google.com/document/d/1f33pt_ImWLqc8gB-IrQ8BNcO3kDr4RhnwY3p_rKIFaI",
@@ -119,11 +119,29 @@
       "text": "Follow the !abs steps",
       "steps": [
         "Send yourself !abs as a Slack direct message to pull up the steps.",
-        "Follow the steps. Related guides: Trailer ABS Guidance and the KBDiag Laptop Guide."
+        "Follow the steps. Related guide: [Trailer ABS Guidance](https://docs.google.com/document/d/1iC6CRCUGEswrCBSqRjA9psjDzYCdn4gijOe6lxFVpqk)."
       ],
       "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), ABS Warning Light Illuminated on Dash",
-      "next": "ph_esc",
+      "next": "ph_abs_kbd",
       "resolvedNext": "ph_forvis"
+    },
+    "ph_abs_kbd": {
+      "type": "question",
+      "text": "Do the steps call for a KBDiag scan?",
+      "help": "KBDiag is a technician tool for reading brake controller fault codes. Operators don't run it.",
+      "source": "TS: VO site practice (Nov 2026) · !abs steps in SVO <> VRE Troubleshooting Steps (KBDiag scan)",
+      "options": [
+        {
+          "label": "Yes",
+          "short": "KBDiag needed",
+          "next": "ph_esc_kbd"
+        },
+        {
+          "label": "No",
+          "short": "No KBDiag",
+          "next": "ph_esc"
+        }
+      ]
     },
     "ph_cs": {
       "type": "action",
@@ -259,6 +277,16 @@
       "terminal": "ESCALATE_VRE",
       "text": "Still not working. Escalate to VRE in a #vops_troubleshooting thread (Scout Troubleshooter, Aurora Mobile App, or /vrehelp) and paste the handoff.",
       "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Purpose"
+    },
+    "ph_esc_kbd": {
+      "type": "terminal",
+      "terminal": "ESCALATE_VRE",
+      "phrase": "ABS warning light on. The !abs steps call for a KBDiag scan. Requesting @fast for assistance.",
+      "details": [
+        "Photo: the ABS light on the dash, to show whether it's the tractor or the trailer light."
+      ],
+      "text": "The !abs steps call for a KBDiag scan. Escalate to VRE and ping FAST in the thread.",
+      "source": "TS: VO site practice (Nov 2026) · !abs steps in SVO <> VRE Troubleshooting Steps (KBDiag scan)"
     }
   }
 }

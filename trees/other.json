@@ -3,7 +3,7 @@
   "id": "other",
   "title": "Something else",
   "role": "category",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "status": "DRAFT",
   "sourceDocs": [
     "DTP TS tickets via Glean, 2022–Oct 2026"
@@ -89,7 +89,7 @@
       "text": "Reload the app and check the VO ticket",
       "steps": [
         "Reload Scout or TApp and see if the problem is still there.",
-        "Open the VO ticket and confirm the Shipyard release, Atlas view, and goal list look right.",
+        "Open the [VO ticket](https://jira.int.aurora.tech/) and confirm the Shipyard release, Atlas view, and goal list look right.",
         "If the ticket is wrong, dispatch has to fix it. Note what you found."
       ],
       "help": "Reloading the tool and VO ticket setup errors were behind a lot of tickets that didn't fit a category.",
@@ -113,7 +113,7 @@
       "short": "PBT reset",
       "text": "Do the PBT reset, then retry",
       "steps": [
-        "Perform the PBT reset per SOP.",
+        "Perform the PBT reset per [SOP](https://sites.google.com/aurora.tech/procedures/home-v2).",
         "Retry the blocked step."
       ],
       "help": "If it still won't proceed, the task usually needs a reset from a VRE.",

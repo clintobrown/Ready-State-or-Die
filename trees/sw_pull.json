@@ -3,7 +3,7 @@
   "id": "sw_pull",
   "title": "SW pull failure",
   "role": "category",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "status": "DRAFT",
   "sourceDocs": [
     "DTP TS tickets via Glean, Jul–Oct 2026",
@@ -38,13 +38,13 @@
         }
       ]
     },
-    "sp_ticket": { "howto": ["Open the VO ticket for this mission in Jira (the VO number you were dispatched on).", "Find the Shipyard build info field. It must not be blank. Real values from tickets that worked look like one of these: a release label link such as https://go/driver-label/driver-latest-citest, a Shipyard release link ending in something like /shipyard/release/DriverReleaseGroup/20261014_76, or for driver release dev tests a git SHA written as adswpn:// followed by 40 letters and numbers. A bare word, a half-pasted link, or a SHA without adswpn:// in front is a red flag.", "Find the Atlas view field. It should name the route you're running, for example dfw_hou. Compare it character for character with a ticket for the same route that pulled fine. One past failure was a missing colon at the end: dal_hou where the working ticket had dal_hou:", "Check the goal list name matches the Active Goal Lists page. Use the GL name, not the display name.", "In Scout, look in the bottom right for View update log or View error log and read the error. 'MissionSpec is missing shipyard_build_info field' means the Shipyard field is blank. 'platform_atlas_name ... does not match any in release' means the Atlas view is wrong.", "You can't edit these fields yourself. Tell Dispatch or the requestor which field is wrong and what the error said, then pull again once they fix it."],
+    "sp_ticket": { "howto": ["Open the VO ticket for this mission in [Jira](https://jira.int.aurora.tech/) (the VO number you were dispatched on).", "Find the Shipyard build info field. It must not be blank. Real values from tickets that worked look like one of these: a release label link such as https://go/driver-label/driver-latest-citest, a Shipyard release link ending in something like /shipyard/release/DriverReleaseGroup/20261014_76, or for driver release dev tests a git SHA written as adswpn:// followed by 40 letters and numbers. A bare word, a half-pasted link, or a SHA without adswpn:// in front is a red flag.", "Find the Atlas view field. It should name the route you're running, for example dfw_hou. Compare it character for character with a ticket for the same route that pulled fine. One past failure was a missing colon at the end: dal_hou where the working ticket had dal_hou:", "Check the goal list name. Open the [Active Goal Lists page](https://confluence.int.aurora.tech/spaces/MOps/pages/893946265/Active+Goal+Lists) in Confluence and find your route. The first column is the Goal List Name and the second is the Display Name. The ticket needs the Goal List Name, for example HOU2_STAGING_1. Scout shows the Display Name, HOU2TerminalStagingLaunch1, so don't copy what you see on screen.", "In Scout, look in the bottom right for View update log or View error log and read the error. 'MissionSpec is missing shipyard_build_info field' means the Shipyard field is blank. 'platform_atlas_name ... does not match any in release' means the Atlas view is wrong.", "You can't edit these fields yourself. Tell Dispatch or the requestor which field is wrong and what the error said, then pull again once they fix it."],
       "type": "action",
       "authorizedRole": "VO",
       "short": "Ticket check",
       "text": "Check the VO ticket's software and route fields",
       "steps": [
-        "Open the VO ticket for this mission.",
+        "Open the [VO ticket](https://jira.int.aurora.tech/) for this mission.",
         "Confirm it has a Shipyard release or build in the expected format.",
         "Confirm the Atlas view and goal list fields match the route exactly (format matters).",
         "If something is missing or wrong, dispatch or the ticket owner has to fix it. Note what you found."
@@ -145,20 +145,20 @@
       "source": "ReadyPath",
       "handoffNote": "Past causes: VO ticket missing or misformatted Shipyard release / Atlas view (dispatch fix); deploy timeouts or GRPC errors (cold start + re-pull); Scout showing failed while the deploy was still running."
     },
-    "sp_build": {
+    "sp_build": { "howto": ["Open the [VO ticket](https://jira.int.aurora.tech/) in Jira and find the Shipyard Build Info field. If you can't see that field at all, no build was specified. That's your problem, so skip to step 6.", "Tap the link in that field. It should open the release in Shipyard.", "Open [Package Tracker](https://packagetracker.use1-offboard-prod01.ob.cloud.aurora.tech/) and search with the VO number and your truck ID. Always enter the truck ID. Without one it shows \"Deployment is Not Ready\" even when the build is fine.", "Read the result. Ready to deploy means go ahead and pull. Still building means wait and check again. Build failed means the pull will fail too.", "If the simulation results are missing, don't pull. Check with Dispatch first.", "You can't fix a build yourself. Tell Dispatch or the requestor what Package Tracker showed."],
       "type": "action",
       "authorizedRole": "VO",
       "short": "Build check",
       "text": "Check a build is present and the ticket is deployable",
       "steps": [
         "Check the Shipyard info to make sure a build is present.",
-        "Check Package Tracker to make sure the ticket is deployable.",
+        "Check [Package Tracker](https://packagetracker.use1-offboard-prod01.ob.cloud.aurora.tech/) to make sure the ticket is deployable.",
         "If the build isn't deployable, work with the requestor to resolve the software build issue before pulling again."
       ],
       "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Deploy Issues",
       "next": "sp_retry",
       "resolvedNext": "sp_forvis",
-      "help": "For when Scout shows the SW pull FAILED. Package Tracker: packagetracker.use1-offboard-prod01.ob.cloud.aurora.tech."
+      "help": "For when Scout shows the SW pull FAILED."
     },
     "sp_net": {
       "type": "action",

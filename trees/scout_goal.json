@@ -3,7 +3,7 @@
   "id": "scout_goal",
   "title": "Scout goal setup problem",
   "role": "category",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "status": "DRAFT",
   "sourceDocs": [
     "DTP TS tickets via Glean, 2022–Oct 2026"
@@ -46,8 +46,8 @@
       "short": "Ticket check",
       "text": "Check the VO ticket's Atlas view and goal list",
       "steps": [
-        "Confirm the Atlas view on the ticket matches the route, in the exact expected format.",
-        "Confirm the goal list name matches the Active Goal Lists page (GL name, not the display name).",
+        "Confirm the Atlas view on the [VO ticket](https://jira.int.aurora.tech/) matches the route, in the exact expected format.",
+        "Confirm the goal list name matches the [Active Goal Lists page](https://confluence.int.aurora.tech/spaces/MOps/pages/893946265/Active+Goal+Lists) (GL name, not the display name).",
         "Reload Scout and look again.",
         "If the ticket is wrong, dispatch has to fix it. Note what you found."
       ],
@@ -63,7 +63,7 @@
       "steps": [
         "Reload Scout and check the goal list again.",
         "Scout doesn't always show a goal list that was set remotely, so it may already be set.",
-        "If it's still blank, set the goal list per SOP."
+        "If it's still blank, set the goal list per [SOP](https://sites.google.com/aurora.tech/procedures/home-v2)."
       ],
       "source": "TS: DTP-61987, DTP-28931",
       "next": "sg_esc",

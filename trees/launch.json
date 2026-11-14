@@ -3,7 +3,7 @@
   "id": "launch",
   "title": "Launch issue",
   "role": "category",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "status": "DRAFT",
   "sourceDocs": [
     "DTP TS tickets via Glean, Jun–Oct 2026"
@@ -54,7 +54,7 @@
       "short": "PBT reset",
       "text": "Do the PBT reset, then retry launch",
       "steps": [
-        "Perform the PBT reset per SOP.",
+        "Perform the PBT reset per [SOP](https://sites.google.com/aurora.tech/procedures/home-v2).",
         "Retry the launch step."
       ],
       "source": "TS: DTP-111734, DTP-108520, DTP-105658",
@@ -79,7 +79,7 @@
       "short": "Ticket check",
       "text": "Check the software on the VO ticket",
       "steps": [
-        "Confirm the ticket's Shipyard release matches the software you pulled.",
+        "Confirm the [VO ticket](https://jira.int.aurora.tech/)'s Shipyard release matches the software you pulled.",
         "If it doesn't, dispatch or the ticket owner has to fix it."
       ],
       "source": "TS: DTP-108736",
