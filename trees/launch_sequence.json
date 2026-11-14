@@ -3,7 +3,7 @@
   "id": "launch_sequence",
   "title": "Launch a truck",
   "role": "sequence",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "status": "DRAFT",
   "sourceDocs": [
     "Terminals SOP 500-009358-01 (rev Oct 13, 2026)",
@@ -15,7 +15,7 @@
   ],
   "start": "ls_p0",
   "nodes": {
-    "ls_p0": {
+    "ls_p0": { "link": {"label": "Open ATMS", "url": "https://aurora-tms.lovable.app/auth"},
       "type": "question",
       "phase": "Phase 0 · ATMS",
       "text": "Confirm in ATMS that your truck has an order leaving {terminal}",
@@ -335,7 +335,7 @@
       "tree": "calibration",
       "returnTo": "ls_p3"
     },
-    "ls_p4": {
+    "ls_p4": { "link": {"label": "Open ATMS", "url": "https://aurora-tms.lovable.app/auth"},
       "type": "question",
       "phase": "Phase 4 · Trip",
       "text": "Confirm the trip is ready in TApp",
@@ -395,7 +395,7 @@
       "next": "ls_t2",
       "resolvedNext": "ls_p51"
     },
-    "ls_t2": {
+    "ls_t2": { "link": {"label": "Open ATMS", "url": "https://aurora-tms.lovable.app/auth"},
       "type": "action",
       "authorizedRole": "VO",
       "short": "Terminal",

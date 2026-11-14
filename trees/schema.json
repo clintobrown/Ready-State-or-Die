@@ -294,6 +294,16 @@
           "type": "string",
           "description": "input only. Hint text inside the text box."
         },
+        "link": {
+          "type": "object",
+          "required": ["label", "url"],
+          "additionalProperties": false,
+          "properties": {
+            "label": { "type": "string" },
+            "url": { "type": "string", "pattern": "^https://" }
+          },
+          "description": "question or action only. Adds a button that opens this address in a new tab and copies the run's truck ID to the clipboard."
+        },
         "phrase": {
           "type": "string",
           "description": "escalation terminal only. The short line the operator copies into the thread. {issue} is replaced by the 'issue' of the last answer picked (or the text typed into an input node); if there is none it is dropped."

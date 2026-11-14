@@ -3,7 +3,7 @@
   "id": "stack_control",
   "title": "Stack mode or control state gap",
   "role": "category",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "status": "DRAFT",
   "sourceDocs": [
     "DTP TS tickets via Glean, Aug–Oct 2026"
@@ -60,7 +60,7 @@
       "source": "TS: DTP-108061",
       "next": "sc_esc"
     },
-    "sc_unauth": {
+    "sc_unauth": { "link": {"label": "Open ATMS", "url": "https://aurora-tms.lovable.app/auth"},
       "type": "action",
       "authorizedRole": "VO",
       "short": "ATMS check",
