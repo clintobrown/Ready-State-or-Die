@@ -45,3 +45,6 @@ Step 5: Update tickets/<truck-id>.json with those 5 and set updated to the curre
 
 ## Escalation screen: phrase and Additional Details
 When a run ends in an escalation, the operator sees two boxes, each with its own copy button. **Copy and paste this** is one short line, taken from the terminal's `phrase` (e.g. `"Can't obtain Ready State, {issue}"`). `{issue}` is filled from the `issue` on the last answer the operator picked, e.g. `{"label": "Something else, or many errors", "issue": "multiple checklists", ...}`; with no issue it is dropped. **Additional Details** is built by the app (truck, trailer, platform, tool, the fixes tried and how each went) followed by the terminal's `details` lines, which is where to say what to screenshot. A terminal with no `phrase` falls back to the symptom name. The full step log is still in History.
+
+## Link buttons (e.g. Open ATMS)
+A question or action node can carry `"link": {"label": "Open ATMS", "url": "https://..."}`. The step then shows a button that opens that address in a new tab and copies the run's truck ID, so the operator can paste it straight into the search. The app does not read anything from the linked site.
