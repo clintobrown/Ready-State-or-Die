@@ -3,7 +3,7 @@
   "id": "scout_issue",
   "title": "Scout or module crash, freeze, or mission won't start",
   "role": "category",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "status": "DRAFT",
   "sourceDocs": [
     "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), docs.google.com/document/d/1f33pt_ImWLqc8gB-IrQ8BNcO3kDr4RhnwY3p_rKIFaI",
@@ -72,7 +72,7 @@
       "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Module Crash",
       "next": "si_esc",
       "resolvedNext": "si_forvis",
-      "help": "If the trip or mission was started in the Aurora Mobile App: ask RAS to move the vehicle to the IDLE stack, then continue the cold start steps; after the vehicle is back on, RA moves it back to the AUTONOMOUS stack. If it was started in Scout, you don't need RA.",
+      "help": "If the mission was started in the Aurora Mobile App, RA moves the vehicle back to the AUTONOMOUS stack after it's back on.",
       "variants": [
         {
           "when": {

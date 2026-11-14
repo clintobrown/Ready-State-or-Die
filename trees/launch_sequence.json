@@ -3,7 +3,7 @@
   "id": "launch_sequence",
   "title": "Launch a truck",
   "role": "sequence",
-  "version": "0.4.5",
+  "version": "0.4.7",
   "status": "DRAFT",
   "sourceDocs": [
     "Terminals SOP 500-009358-01 (rev Oct 13, 2026)",
@@ -117,7 +117,7 @@
           "label": "Something else",
           "short": "Other",
           "type": "fail",
-          "next": "ls_esc_ts"
+          "next": "ls_r_ts_p2"
         },
         {
           "label": "STOP, DON'T TOUCH",
@@ -160,8 +160,8 @@
             "platform": "volvo"
           },
           "steps": [
-            "Swap stack to idle via TAPP or Scout.",
             "Apply parking brake.",
+            "Note: You no longer need to be in the idle stack to cold start. You only need to be in idle when removing logging disks.",
             "Press and hold the Compute Power Button for 5 seconds. PWR indicators blink red.",
             "Wait for both PWR indicators to slow-blink green.",
             "Press and hold the Engine Start Button to turn off the vehicle.",
@@ -189,7 +189,7 @@
           "steps": [
             "Perform System Shut Down.",
             "Apply parking brake and place transmission in Neutral.",
-            "Swap stack to idle via TAPP or Scout.",
+            "Note: You no longer need to be in the idle stack to cold start. You only need to be in idle when removing logging disks.",
             "Turn ignition key OFF. The LED stays solid green for about 150 seconds, flashes red for about 10 seconds, then turns off.",
             "Wait a minimum of 3 minutes after the LED is off.",
             "Perform System Start Up.",
@@ -209,7 +209,7 @@
           "steps": [
             "Perform System Shut Down.",
             "Apply parking brake and place transmission in Neutral.",
-            "Swap stack to idle via TAPP or Scout.",
+            "Note: You no longer need to be in the idle stack to cold start. You only need to be in idle when removing logging disks.",
             "Turn ignition key OFF.",
             "If on shore power: turn the shore power unit switch OFF and disconnect shore power from the vehicle.",
             "Wait a minimum of 2 minutes.",
@@ -304,7 +304,7 @@
           "label": "Something else",
           "short": "Other",
           "type": "fail",
-          "next": "ls_esc_ts"
+          "next": "ls_r_ts_p3"
         },
         {
           "label": "STOP, DON'T TOUCH",
@@ -485,7 +485,7 @@
           "label": "Something else",
           "short": "Other",
           "type": "fail",
-          "next": "ls_esc_ts"
+          "next": "ls_r_ts_p51"
         },
         {
           "label": "STOP, DON'T TOUCH",
@@ -579,7 +579,7 @@
           "label": "Something else",
           "short": "Other",
           "type": "fail",
-          "next": "ls_esc_ts"
+          "next": "ls_r_ts_p52"
         },
         {
           "label": "STOP, DON'T TOUCH",
@@ -642,7 +642,7 @@
           "label": "Something else",
           "short": "Other",
           "type": "fail",
-          "next": "ls_esc_ts"
+          "next": "ls_r_ts_p53"
         },
         {
           "label": "STOP, DON'T TOUCH",
@@ -677,7 +677,7 @@
           "label": "Something else",
           "short": "Other",
           "type": "fail",
-          "next": "ls_esc_ts"
+          "next": "ls_r_ts_p54"
         },
         {
           "label": "STOP, DON'T TOUCH",
@@ -725,7 +725,7 @@
           "label": "Something else",
           "short": "Other",
           "type": "fail",
-          "next": "ls_esc_ts"
+          "next": "ls_r_ts_p55"
         },
         {
           "label": "STOP, DON'T TOUCH",
@@ -839,6 +839,13 @@
       "source": "Terminals SOP 500-009358-01 (rev Oct 13, 2026), Launching 2.2 (OR-104 #10)",
       "handoffNote": "Keep the truck immobilized (parking brake set, Neutral) and stay with it until VRE responds.",
       "stop": true
-    }
+    },
+    "ls_r_ts_p2": {"type": "route", "text": "Troubleshooting menu", "tree": "tapp_step", "returnTo": "ls_p2"},
+    "ls_r_ts_p3": {"type": "route", "text": "Troubleshooting menu", "tree": "tapp_step", "returnTo": "ls_p3"},
+    "ls_r_ts_p51": {"type": "route", "text": "Troubleshooting menu", "tree": "tapp_step", "returnTo": "ls_p51"},
+    "ls_r_ts_p52": {"type": "route", "text": "Troubleshooting menu", "tree": "tapp_step", "returnTo": "ls_p52"},
+    "ls_r_ts_p53": {"type": "route", "text": "Troubleshooting menu", "tree": "tapp_step", "returnTo": "ls_p53"},
+    "ls_r_ts_p54": {"type": "route", "text": "Troubleshooting menu", "tree": "tapp_step", "returnTo": "ls_p54"},
+    "ls_r_ts_p55": {"type": "route", "text": "Troubleshooting menu", "tree": "tapp_step", "returnTo": "ls_p55"}
   }
 }
