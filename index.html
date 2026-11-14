@@ -123,6 +123,7 @@ ol.steps li{margin:6px 0;padding-left:4px}
 .term{border-radius:14px;padding:20px 18px;font-size:32px;font-weight:900;line-height:1.1}
 .term.ok{background:var(--ok);color:var(--ok-fg)} .term.bad{background:var(--bad);color:var(--bad-fg)}
 .term small{display:block;font-size:20px;font-weight:700;margin-top:8px}
+pre.sum.phrase{font-size:21px;line-height:1.3;max-height:none}
 pre.sum{white-space:pre-wrap;word-break:break-word;margin:0;font:600 16px/1.45 "Roboto Mono",ui-monospace,Menlo,monospace;background:var(--card);border:3px solid var(--line);border-radius:12px;padding:12px;max-height:42vh;overflow:auto}
 
 .banner{border:4px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--card)}
@@ -230,7 +231,7 @@ const isEsc = t => ESC.includes(t);
 const ESC_LABEL = { ESCALATE_VRE:'Escalate to VRE', ESCALATE_TS:'Open a TS thread', ESCALATE_DISPATCH:'Contact Dispatch' };
 const SAFETY_RE = /\b(bypass\w*|override\w*|defeat\w*|jumper\w*|disable\w*\s+(?:the\s+)?(?:interlock|safety|check|alarm|e-?stop)\w*|ignore\w*\s+(?:the\s+|any\s+)?(?:fault|warning|alarm|interlock|check)\w*|skip\w*\s+(?:the\s+)?(?:check|checklist|sop|inspection|pre-?trip)\w*)\b/i;
 function nodeTexts(n){
-  const out=[n.text,n.help,n.caution,n.handoffNote,n.placeholder,n.done_when,...(n.steps||[]),...(n.options||[]).map(o=>o.label)];
+  const out=[n.text,n.help,n.caution,n.handoffNote,n.placeholder,n.done_when,n.phrase,...[].concat(n.details||[]),...(n.steps||[]),...(n.options||[]).map(o=>o.label),...(n.options||[]).map(o=>o.issue)];
   (n.variants||[]).forEach(v=>out.push(v.text,v.help,v.caution,...(v.steps||[])));
   return out.filter(Boolean);
 }
@@ -485,12 +486,40 @@ function buildSummary(s){
   L.push('', `Run ID: ${s.id} (READY STATE or DIE)`);
   return L.join('\n');
 }
+/* ---------- escalation card: one short phrase to paste, plus Additional Details ---------- */
+function escPhrase(s, n){
+  const hit = [...s.steps].reverse().find(x=>x.issue);
+  let p = String((n && n.phrase) || '');
+  p = hit ? p.replace(/\{issue\}/g, hit.issue) : p.replace(/[\s,:;-]*\{issue\}/g, '');
+  p = p.replace(/\s+/g,' ').trim();
+  return p || `${String(s.symptom||'Truck not reaching ready state').replace(/\s*\(via .*\)$/,'')}: operator steps didn't clear it`;
+}
+function escDetails(s, n){
+  const L=[];
+  L.push(`Truck: ${s.truck} | Trailer: ${s.trailer==='BOBTAIL'?'Bobtail':(s.trailer||'not recorded')} | ${platLabel(s.platform)} | ${toolLabel(s.tool)}`);
+  if(s.terminal) L.push(`Launching from: ${s.terminal.name} (${s.terminal.id})`);
+  if(s.at) L.push(`Step: ${s.at}`);
+  if(s.failure) L.push(`Selected: ${s.failure}`);
+  const acts = s.steps.filter(x=>x.kind==='action');
+  if(acts.length){ L.push('Tried:'); acts.forEach(a=>L.push(`- ${a.text}: ${a.result==='RESOLVED'?'worked':a.result==='NOT PERFORMED'?`not done${a.reason?` (${a.reason})`:''}`:'no change'}`)); }
+  else L.push('Tried: nothing yet, no operator fix applies here');
+  const d = [].concat((n && n.details) || []);
+  d.forEach(x=>L.push(x));
+  if(!d.length) L.push('Screenshot: the TApp or Scout screen showing the error.');
+  return L.join('\n');
+}
 async function copyText(t){
   try { if(navigator.clipboard && window.isSecureContext){ await navigator.clipboard.writeText(t); return true; } } catch(e){}
   const ta=document.createElement('textarea'); ta.value=t; ta.setAttribute('readonly',''); ta.style.cssText='position:fixed;top:0;opacity:0';
   document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, t.length);
   let ok=false; try { ok=document.execCommand('copy'); } catch(e){}
   ta.remove(); return ok;
+}
+
+async function copyBox(boxSel, btnSel, label){
+  const el=$(boxSel); const ok = await copyText(el ? el.textContent : '');
+  toast(ok ? 'Copied' : 'Copy blocked. Long-press the text to copy.');
+  const b=$(btnSel); if(b && ok){ b.textContent='Copied ✓'; setTimeout(()=>{ const c=$(btnSel); if(c) c.textContent=label; }, 2000); }
 }
 
 /* ---------- device helpers ---------- */
@@ -674,16 +703,16 @@ function runBody(){
       <div class="answers"><button class="btn pri" data-act="newrun">Start a new run</button><button class="btn sm" data-act="copy">Copy run summary</button></div>`;
   }
   if(n.type==='terminal'){
-    return `<div class="term bad">${n.stop?'STOP. Don\'t touch.':esc(ESC_LABEL[n.terminal]||'Escalate')}<small>${esc(v.text)}</small></div>
-      ${n.handoffNote?`<div class="draft"><b>What to ask for:</b> ${esc(n.handoffNote)}</div>`:''}
-      ${n.terminal!=='ESCALATE_DISPATCH'?`<label class="field-label" for="buildId">Build ID (optional)</label>
-      <input id="buildId" class="big" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Software build ${s.tool==='scout'?'Scout':'TApp'} shows, e.g. AV-FUSION-0052-…" value="${esc((s.ctx&&s.ctx.buildId)||'')}">
-      <p class="help">VRE and TS usually ask for it. Leave blank if you can't see it.</p>`:''}
-      <button class="btn sig" data-act="copy" id="copyBtn">${copyLabel()}</button>
-      ${navigator.share?`<button class="btn sm" data-act="share">Share to app…</button>`:''}
-      <label class="field-label" for="note">Note (optional)</label>
-      <textarea id="note" placeholder="What you see on screen, anything unusual…">${esc(s.note)}</textarea>
-      <pre class="sum" id="sum">${esc(buildSummary(s))}</pre>`;
+    const where = n.stop ? '' : n.terminal==='ESCALATE_DISPATCH' ? 'Send this to Dispatch.' : 'Start a /vrehelp thread and paste this.';
+    return `<div class="term bad">${n.stop?'STOP. Don\'t touch.':esc(ESC_LABEL[n.terminal]||'Escalate')}${n.stop?`<small>${esc(v.text)}</small>`:''}</div>
+      ${n.stop && n.handoffNote?`<div class="caution">${esc(n.handoffNote)}</div>`:''}
+      <div class="field-label">Copy and paste this</div>
+      <pre class="sum phrase" id="escPhrase">${esc(escPhrase(s,v))}</pre>
+      ${where?`<p class="help">${where}</p>`:''}
+      <button class="btn sig" data-act="copyPhrase" id="copyPhraseBtn">Copy</button>
+      <div class="field-label">Additional Details</div>
+      <pre class="sum" id="escDetails">${esc(escDetails(s,v))}</pre>
+      <button class="btn sm" data-act="copyDetails" id="copyDetailsBtn">Copy details</button>`;
   }
   return `<div class="banner"><b>A route points to a tree that isn't loaded.</b><button class="btn bad" data-act="forceEsc">Escalate to VRE now</button></div>`;
 }
@@ -752,7 +781,7 @@ const A = {
   ans(i){
     const n=curNode(), o=n.options[+i], v=view(n);
     snapshot();
-    S.s.steps.push({ kind:'question', tree:S.s.cur.tree, node:n.id, text:v.text, answer:o.label, short:o.short||o.label, at:Date.now(), placeholder:isPh(n), draft:isDraft(n) });
+    S.s.steps.push({ kind:'question', tree:S.s.cur.tree, node:n.id, text:v.text, answer:o.label, short:o.short||o.label, issue:o.issue||'', at:Date.now(), placeholder:isPh(n), draft:isDraft(n) });
     if(n.phase){ S.s.at = `${n.phase}: ${v.text}`; if(o.type==='fail'||o.type==='stop') S.s.failure = o.label; }
     if(n.capture) (S.s.ctx = S.s.ctx || {})[n.capture] = o.label;
     goto(o.next);
@@ -761,7 +790,7 @@ const A = {
     const n=curNode(), v=view(n), el=$('#inp'), val=(arg==='1' && el) ? el.value.trim() : '';
     snapshot();
     if(n.capture && val) (S.s.ctx = S.s.ctx || {})[n.capture] = val;
-    S.s.steps.push({ kind:'question', tree:S.s.cur.tree, node:n.id, text:v.text, answer: val || '(skipped)', short: val ? (val.length>18 ? val.slice(0,17)+'…' : val) : 'Skipped', at:Date.now(), placeholder:isPh(n), draft:isDraft(n) });
+    S.s.steps.push({ kind:'question', tree:S.s.cur.tree, node:n.id, text:v.text, answer: val || '(skipped)', short: val ? (val.length>18 ? val.slice(0,17)+'…' : val) : 'Skipped', issue: val || '', at:Date.now(), placeholder:isPh(n), draft:isDraft(n) });
     goto(n.next);
   },
   done(){ snapshot(); S.s.cur.phase='verify'; saveActive(); render(); },
@@ -791,6 +820,8 @@ const A = {
     toast(ok ? 'Copied' : 'Copy blocked. Long-press the text to copy.');
     const b=$('#copyBtn'); if(b && ok){ b.textContent='Copied ✓'; setTimeout(()=>{ const c=$('#copyBtn'); if(c) c.textContent=copyLabel(); }, 2000); }
   },
+  async copyPhrase(){ await copyBox('#escPhrase', '#copyPhraseBtn', 'Copy'); },
+  async copyDetails(){ await copyBox('#escDetails', '#copyDetailsBtn', 'Copy details'); },
   async share(){ try { await navigator.share({ title:`VRE handoff ${S.s.truck}`, text:buildSummary(S.s) }); } catch(e){} },
   log(){ S.showLog=!S.showLog; render(); },
   hist(id){ S.histId=id; S.screen='detail'; render(); },

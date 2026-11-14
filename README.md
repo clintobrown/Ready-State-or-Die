@@ -42,3 +42,6 @@ Step 2: Log into Jira (jira.int.aurora.tech) yourself.
 Step 3: Search: project = DTP AND summary ~ "<truck-id>" ORDER BY created DESC  
 Step 4: For the newest 5, record key, date, discrepancy and resolution (leave resolution empty if none; the app shows "No resolution recorded").  
 Step 5: Update tickets/<truck-id>.json with those 5 and set updated to the current date/time (ISO, e.g. 2026-11-01T14:30:00). No CACHE bump needed for ticket files.
+
+## Escalation screen: phrase and Additional Details
+When a run ends in an escalation, the operator sees two boxes, each with its own copy button. **Copy and paste this** is one short line, taken from the terminal's `phrase` (e.g. `"Can't obtain Ready State, {issue}"`). `{issue}` is filled from the `issue` on the last answer the operator picked, e.g. `{"label": "Something else, or many errors", "issue": "multiple checklists", ...}`; with no issue it is dropped. **Additional Details** is built by the app (truck, trailer, platform, tool, the fixes tried and how each went) followed by the terminal's `details` lines, which is where to say what to screenshot. A terminal with no `phrase` falls back to the symptom name. The full step log is still in History.
