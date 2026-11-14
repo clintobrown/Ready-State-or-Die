@@ -3,7 +3,7 @@
   "id": "launch",
   "title": "Launch issue",
   "role": "category",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "status": "DRAFT",
   "sourceDocs": [
     "DTP TS tickets via Glean, Jun–Oct 2026"
@@ -16,28 +16,28 @@
       "source": "TS: DTP-111734, DTP-100634, DTP-111048, DTP-110239, DTP-108736, DTP-104301",
       "options": [
         {
-          "label": "PBT reset required",
+          "label": "PBT reset required", "issue": "PBT reset required",
           "short": "PBT",
           "platforms": ["peterbilt"],
           "next": "ln_pbt"
         },
         {
-          "label": "Engage not confirmed, or launch timed out",
+          "label": "Engage not confirmed, or launch timed out", "issue": "engage not confirmed or launch timed out",
           "short": "Timed out",
           "next": "ln_esc_reset"
         },
         {
-          "label": "Authorization is stale",
+          "label": "Authorization is stale", "issue": "authorization is stale",
           "short": "Stale auth",
           "next": "ln_esc_reset"
         },
         {
-          "label": "Software deployment in progress",
+          "label": "Software deployment in progress", "issue": "software deployment in progress",
           "short": "Deploy ongoing",
           "next": "ln_deploy"
         },
         {
-          "label": "Software not of release / permission check",
+          "label": "Software not of release / permission check", "issue": "software not of release",
           "short": "Wrong SW",
           "next": "ln_ticket"
         },
@@ -129,14 +129,14 @@
       "caution": "Follow SOP for any vehicle state change before launch.",
       "help": "A vehicle command error on launch cleared with stack to IDLE, cold start, and retry (DTP-104301)."
     },
-    "ln_esc_reset": {
+    "ln_esc_reset": { "phrase": "Launch task needs a reset, {issue}", "details": ["Screenshot: the launch step error."],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "The launch task needs a reset, which only a VRE can do. Open a TS ticket and paste the handoff.",
       "source": "ReadyPath",
       "handoffNote": "Likely request: reset the LAUNCH_VEHICLE task. Past causes: engage not confirmed in time after arming (DTP-100634), authorization nonce about 30 min old (DTP-111048). Operator will engage promptly after the reset."
     },
-    "ln_esc": {
+    "ln_esc": { "phrase": "Launch failing, {issue}", "details": ["Screenshot: the launch step error."],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "Operator-level launch steps are used up. Open a TS ticket and paste the handoff.",

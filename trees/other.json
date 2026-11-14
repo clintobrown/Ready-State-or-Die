@@ -3,7 +3,7 @@
   "id": "other",
   "title": "Something else",
   "role": "category",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "status": "DRAFT",
   "sourceDocs": [
     "DTP TS tickets via Glean, 2022–Oct 2026"
@@ -166,7 +166,7 @@
       "source": "TS: DTP-112093, DTP-112431, DTP-111299 · VO site practice (Oct 2026)",
       "next": "ot_esc"
     },
-    "ot_esc": {
+    "ot_esc": { "phrase": "{issue}", "details": ["Screenshot: whatever the tool is showing."],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "Operator-level steps are used up. Open a TS ticket, paste the handoff, and describe what you see in the note.",

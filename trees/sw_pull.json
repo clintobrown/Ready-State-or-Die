@@ -3,10 +3,11 @@
   "id": "sw_pull",
   "title": "SW pull failure",
   "role": "category",
-  "version": "0.4.4",
+  "version": "0.5.2",
   "status": "DRAFT",
   "sourceDocs": [
-    "DTP TS tickets via Glean, Jul–Oct 2026"
+    "DTP TS tickets via Glean, Jul–Oct 2026",
+    "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), docs.google.com/document/d/1f33pt_ImWLqc8gB-IrQ8BNcO3kDr4RhnwY3p_rKIFaI"
   ],
   "start": "sp_when",
   "nodes": {
@@ -16,19 +17,24 @@
       "source": "TS: DTP-105627, DTP-111391, DTP-112058, DTP-91789",
       "options": [
         {
-          "label": "Right away, within about a minute",
+          "label": "Right away, within about a minute", "issue": "fails within a minute",
           "short": "Fast fail",
           "next": "sp_ticket"
         },
         {
-          "label": "After running a long time",
+          "label": "After running a long time", "issue": "fails after a long run",
           "short": "Long fail",
           "next": "sp_long"
         },
         {
-          "label": "Says failed, but it may still be running",
+          "label": "Says failed, but it may still be running", "issue": "shows failed but may still be running",
           "short": "Unsure",
           "next": "sp_still"
+        },
+        {
+          "label": "The truck isn't on the office network", "issue": "truck not on the office network",
+          "short": "No network",
+          "next": "sp_net"
         }
       ]
     },
@@ -44,7 +50,7 @@
         "If something is missing or wrong, dispatch or the ticket owner has to fix it. Note what you found."
       ],
       "source": "TS: DTP-105627, DTP-111391, DTP-104028, DTP-105902",
-      "next": "sp_retry",
+      "next": "sp_build",
       "help": "Most fast failures in past tickets were ticket setup problems, not the truck."
     },
     "sp_still": {
@@ -132,12 +138,62 @@
       "source": "TS: DTP-109186, DTP-108718",
       "next": "sp_esc"
     },
-    "sp_esc": {
+    "sp_esc": { "phrase": "SW pull failing, {issue}", "details": ["Screenshot: the pull or deploy error, plus the Shipyard release and Atlas view fields on the VO ticket."],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "Operator-level SW pull steps are used up. Open a TS ticket and paste the handoff.",
       "source": "ReadyPath",
       "handoffNote": "Past causes: VO ticket missing or misformatted Shipyard release / Atlas view (dispatch fix); deploy timeouts or GRPC errors (cold start + re-pull); Scout showing failed while the deploy was still running."
+    },
+    "sp_build": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Build check",
+      "text": "Check a build is present and the ticket is deployable",
+      "steps": [
+        "Check the Shipyard info to make sure a build is present.",
+        "Check Package Tracker to make sure the ticket is deployable.",
+        "If the build isn't deployable, work with the requestor to resolve the software build issue before pulling again."
+      ],
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Deploy Issues",
+      "next": "sp_retry",
+      "resolvedNext": "sp_forvis",
+      "help": "For when Scout shows the SW pull FAILED. Package Tracker: packagetracker.use1-offboard-prod01.ob.cloud.aurora.tech."
+    },
+    "sp_net": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Network check",
+      "text": "Try another ethernet cord or port, then cold start",
+      "steps": [
+        "Try a different ethernet cord or a different port.",
+        "If that doesn't get you on the network, cold start.",
+        "Retry the pull."
+      ],
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), NOT on Office Network",
+      "next": "sp_ota",
+      "resolvedNext": "sp_forvis",
+      "help": "If you still can't get an ethernet connection, it's most likely a hardware issue on the vehicle or on the ethernet port itself."
+    },
+    "sp_ota": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "OTA pull",
+      "text": "Last resort: pull over the air (cellular)",
+      "steps": [
+        "Start the software pull over the air (cellular) instead of ethernet.",
+        "Let it finish before doing anything else."
+      ],
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), NOT on Office Network",
+      "next": "sp_esc",
+      "resolvedNext": "sp_forvis",
+      "help": "The guide lists an OTA (cellular) pull as the last resort when ethernet can't be made to work."
+    },
+    "sp_forvis": {
+      "type": "terminal",
+      "terminal": "RESOLVED",
+      "text": "Software pull working again without VRE. Post a /vreforvis with the steps you took, a sysreport if possible, and how long you spent troubleshooting.",
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Purpose"
     }
   }
 }

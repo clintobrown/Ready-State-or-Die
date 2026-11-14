@@ -154,6 +154,10 @@
           "type": "string",
           "description": "Node id to go to when tapped."
         },
+        "issue": {
+          "type": "string",
+          "description": "Optional. Short wording of this answer that fills {issue} in an escalation phrase, e.g. 'multiple checklists'."
+        },
         "tools": {
           "type": "array",
           "items": {
@@ -289,6 +293,17 @@
         "placeholder": {
           "type": "string",
           "description": "input only. Hint text inside the text box."
+        },
+        "phrase": {
+          "type": "string",
+          "description": "escalation terminal only. The short line the operator copies into the thread. {issue} is replaced by the 'issue' of the last answer picked (or the text typed into an input node); if there is none it is dropped."
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "escalation terminal only. Extra lines for the Additional Details box, e.g. what to screenshot. The app adds truck, trailer, platform, tool and the fixes tried."
         }
       },
       "allOf": [

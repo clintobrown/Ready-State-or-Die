@@ -3,7 +3,7 @@
   "id": "tapp_step",
   "title": "Start here",
   "role": "category",
-  "version": "0.3.5",
+  "version": "0.4.1",
   "status": "DRAFT",
   "sourceDocs": [
     "DTP TS tickets via Glean, Aug–Oct 2026"
@@ -15,20 +15,28 @@
       "text": "What are you having an issue with?",
       "source": "TS: DTP-111167, DTP-110126, DTP-108736",
       "options": [
-        { "label": "ATMS/TApp or Mission Setup", "short": "ATMS/TApp", "next": "ts_recovery" },
+        { "label": "ATMS/TApp or Mission Setup", "issue": "ATMS/TApp or mission setup", "short": "ATMS/TApp", "next": "ts_recovery" },
         { "label": "Calibration", "short": "Calibration", "next": "ts_r_cal" },
         { "label": "SW Pull", "short": "SW Pull", "next": "ts_r_sw" },
-        { "label": "Prepare the Aurora Driver", "short": "Prepare AD", "next": "ts_recovery" },
+        { "label": "Prepare the Aurora Driver", "issue": "Prepare the Aurora Driver", "short": "Prepare AD", "next": "ts_recovery" },
         { "label": "Enter weight and KPRA", "short": "Weight/KPRA", "next": "ts_r_cal" },
-        { "label": "Diagnostics", "short": "Diagnostics", "next": "ts_recovery" },
-        { "label": "Safety requirements", "short": "Safety reqs", "next": "ts_recovery" },
+        { "label": "Diagnostics", "issue": "Diagnostics", "short": "Diagnostics", "next": "ts_recovery" },
+        { "label": "Safety requirements", "issue": "Safety requirements", "short": "Safety reqs", "next": "ts_recovery" },
         { "label": "Launch", "short": "Launch", "next": "ts_r_launch" },
         { "label": "Can't get a Ready State", "short": "No ready state", "next": "ts_r_ready" },
+        { "label": "Pre-mission or pre-deploy checks", "short": "Pre-checks", "next": "ts_r_precheck" },
+        { "label": "Power, compute, RSI or ABS light", "short": "Power/RSI", "next": "ts_r_power" },
+        { "label": "Scout or a module crashed or froze", "short": "Scout/module", "next": "ts_r_scout" },
+        { "label": "Aurora Mobile App: trip, connection or deploy", "short": "Mobile App", "next": "ts_r_mobile" },
         { "label": "Something Different", "short": "Other", "next": "ts_r_other" }
       ]
     },
     "ts_r_ready": { "type": "route", "text": "No ready state", "tree": "compute_ready" },
     "ts_r_other": { "type": "route", "text": "Something else", "tree": "other" },
+    "ts_r_precheck": { "type": "route", "text": "Pre-mission or pre-deploy checks", "tree": "precheck" },
+    "ts_r_power": { "type": "route", "text": "Power, compute, RSI or ABS light", "tree": "power_hw" },
+    "ts_r_scout": { "type": "route", "text": "Scout or module problem", "tree": "scout_issue" },
+    "ts_r_mobile": { "type": "route", "text": "Aurora Mobile App", "tree": "mobile_app" },
     "ts_r_sw": {
       "type": "route",
       "text": "Software download",
@@ -97,7 +105,7 @@
       "next": "ts_esc",
       "help": "After a PBT reset the failed task may still need a reset, which a VRE does remotely."
     },
-    "ts_esc": {
+    "ts_esc": { "phrase": "TApp step failed, {issue}", "details": ["Screenshot: the TApp error with its instruction and recovery action (for example RETRY_STEP or REQUEST_SUPPORT)."],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "Operator-level TApp steps are used up. Open a TS ticket and paste the handoff.",

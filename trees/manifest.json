@@ -1,5 +1,5 @@
 {
-  "manifestVersion": "0.3.2",
+  "manifestVersion": "0.4.0",
   "tools": [
     {
       "id": "scout",
@@ -35,6 +35,10 @@
     "launch_sequence.json",
     "launch.json",
     "scout_goal.json",
+    "precheck.json",
+    "power_hw.json",
+    "scout_issue.json",
+    "mobile_app.json",
     "other.json"
   ],
   "fleet": "fleet.json",

@@ -1,0 +1,188 @@
+{
+  "$schema": "./schema.json",
+  "id": "power_hw",
+  "title": "Power, compute, RSI or ABS light",
+  "role": "category",
+  "version": "0.2.1",
+  "status": "DRAFT",
+  "sourceDocs": [
+    "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), docs.google.com/document/d/1f33pt_ImWLqc8gB-IrQ8BNcO3kDr4RhnwY3p_rKIFaI",
+    "Dev & Bring-Up BOLOs (reviewed 11/6/2026), in the Dev Ops Troubleshooting Guide"
+  ],
+  "start": "ph_what",
+  "nodes": {
+    "ph_what": {
+      "type": "question",
+      "text": "What's happening?",
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Powering on Vehicle/Compute/RSI/NUC",
+      "options": [
+        {
+          "label": "PWR A/B LEDs aren't lit",
+          "short": "LEDs off",
+          "next": "ph_led"
+        },
+        {
+          "label": "RSI display is blank", "issue": "RSI display blank",
+          "short": "RSI blank",
+          "next": "ph_rsi"
+        },
+        {
+          "label": "RSI is on but can't ping the car", "issue": "RSI can't ping the car",
+          "short": "No ping",
+          "next": "ph_ping"
+        },
+        {
+          "label": "Compute won't turn on in hot or cold weather", "issue": "compute won't turn on (temperature)",
+          "short": "Temperature",
+          "next": "ph_temp"
+        },
+        {
+          "label": "RSI laptop lost the stack or can't reach websites", "issue": "RSI laptop lost the stack connection",
+          "short": "RSI network",
+          "next": "ph_static"
+        },
+        {
+          "label": "ABS warning light is on", "issue": "ABS warning light on",
+          "short": "ABS light",
+          "next": "ph_abs"
+        }
+      ]
+    },
+    "ph_led": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Cold start",
+      "text": "Cold start",
+      "steps": [
+        "Run the cold start steps for your platform: !coldstart (a579m), !volvocoldstart (asvat) or !a2cs (LTS).",
+        "Check whether the PWR A/B LEDs come on."
+      ],
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Powering on Vehicle/Compute/RSI/NUC",
+      "next": "ph_esc_led",
+      "resolvedNext": "ph_forvis",
+      "help": "The ! commands come up when you send them to yourself as a Slack direct message."
+    },
+    "ph_rsi": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "RSI power",
+      "text": "Check the RSI power button",
+      "steps": [
+        "Check that the power button on the back of the RSI is on. There should be a green or orange light."
+      ],
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Powering on Vehicle/Compute/RSI/NUC",
+      "next": "ph_cs",
+      "resolvedNext": "ph_forvis"
+    },
+    "ph_abs": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "!abs",
+      "text": "Follow the !abs steps",
+      "steps": [
+        "Send yourself !abs as a Slack direct message to pull up the steps.",
+        "Follow the steps. Related guides: Trailer ABS Guidance and the KBDiag Laptop Guide."
+      ],
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), ABS Warning Light Illuminated on Dash",
+      "next": "ph_esc",
+      "resolvedNext": "ph_forvis"
+    },
+    "ph_cs": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Cold start",
+      "text": "Cold start and check again",
+      "steps": [
+        "Run the cold start steps for your platform: !coldstart (a579m), !volvocoldstart (asvat) or !a2cs (LTS).",
+        "Check whether the problem has cleared."
+      ],
+      "source": "TS: generic cold-start step, same as the other trees (VO site practice, Oct 2026). Added so operator options run out before escalating; the Dev Ops guide itself goes to VRE at this point.",
+      "next": "ph_esc",
+      "resolvedNext": "ph_forvis",
+      "help": "The ! commands come up when you send them to yourself as a Slack direct message."
+    },
+    "ph_ping": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Compute power",
+      "text": "Check the compute is powered on",
+      "steps": [
+        "Look for two solid PWR A/B LEDs.",
+        "If no lights appear, long-press the power button for five seconds to power the compute down.",
+        "Wait until the LEDs are slow-blinking green, then short-press to power the compute back on.",
+        "Try to ping the car again."
+      ],
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Powering on Vehicle/Compute/RSI/NUC",
+      "next": "ph_cs",
+      "resolvedNext": "ph_forvis"
+    },
+    "ph_temp": {
+      "type": "question",
+      "text": "Is it too hot or too cold out?",
+      "help": "If the outside temperature is too hot or too cold, the compute may not turn on.",
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Powering on Vehicle/Compute/RSI/NUC",
+      "options": [
+        {
+          "label": "Cold",
+          "short": "Cold",
+          "next": "ph_warm"
+        },
+        {
+          "label": "Hot",
+          "short": "Hot",
+          "next": "ph_ping"
+        }
+      ]
+    },
+    "ph_warm": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "!warmup",
+      "text": "Run the !warmup procedure",
+      "steps": [
+        "Keep the vehicle running with the heat on in the cabin.",
+        "Turn the rear HVAC to 3/4 heat.",
+        "Long-press the power button (5 seconds) to return the LEDs to slow-blinking green.",
+        "Short-press the power button to turn the compute on.",
+        "If the LEDs go back to solid red (this can take up to 15 minutes), go back to step 3.",
+        "When the LEDs go solid green and the compute powers on, return the rear HVAC to cool and carry on."
+      ],
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Powering on Vehicle/Compute/RSI/NUC",
+      "next": "ph_esc",
+      "resolvedNext": "ph_forvis"
+    },
+    "ph_static": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Wired static",
+      "text": "Set the USB ethernet connection to WIRED STATIC",
+      "steps": [
+        "On the RSI laptop, check the USB ethernet connection.",
+        "Make sure it's set to WIRED STATIC, not WIRED DHCP.",
+        "Check the connection to the stack again."
+      ],
+      "source": "Dev & Bring-Up BOLOs (reviewed 11/6/2026), RSI Laptop Connection Problems",
+      "next": "ph_cs",
+      "resolvedNext": "ph_forvis",
+      "help": "Temporary BOLO for Perseus trucks, last reviewed 11/6/2026: the RSI laptop loses its connection to the stack or can't reach any websites. No fix yet."
+    },
+    "ph_forvis": {
+      "type": "terminal",
+      "terminal": "RESOLVED",
+      "text": "Back up without VRE. Post a /vreforvis with the steps you took, a sysreport if possible, and how long you spent troubleshooting.",
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Purpose"
+    },
+    "ph_esc_led": { "phrase": "PWR A/B LEDs not lit, cold start did not fix it", "details": ["Photo: the PWR A/B LEDs."],
+      "type": "terminal",
+      "terminal": "ESCALATE_VRE",
+      "text": "A cold start didn't bring the PWR A/B LEDs on. Make a ticket in #vops_troubleshooting, say a cold start did not fix it, and paste the handoff.",
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Powering on Vehicle/Compute/RSI/NUC"
+    },
+    "ph_esc": { "phrase": "Power/RSI problem, {issue}", "details": ["Photo: what you're seeing (PWR A/B LEDs, RSI screen, or the dash light).", "Attach a sysreport if you can."],
+      "type": "terminal",
+      "terminal": "ESCALATE_VRE",
+      "text": "Still not working. Escalate to VRE in a #vops_troubleshooting thread (Scout Troubleshooter, Aurora Mobile App, or /vrehelp) and paste the handoff.",
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Purpose"
+    }
+  }
+}

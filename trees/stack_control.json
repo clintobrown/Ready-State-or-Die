@@ -3,7 +3,7 @@
   "id": "stack_control",
   "title": "Stack mode or control state gap",
   "role": "category",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "status": "DRAFT",
   "sourceDocs": [
     "DTP TS tickets via Glean, Aug–Oct 2026"
@@ -16,17 +16,17 @@
       "source": "TS: DTP-108061, DTP-108736",
       "options": [
         {
-          "label": "Stack won't switch modes (e.g. to calibration)",
+          "label": "Stack won't switch modes (e.g. to calibration)", "issue": "stack won't switch modes",
           "short": "Won't switch",
           "next": "sc_msg"
         },
         {
-          "label": "Control state shows UNAUTHORIZED",
+          "label": "Control state shows UNAUTHORIZED", "issue": "control state UNAUTHORIZED",
           "short": "Unauthorized",
           "next": "sc_unauth"
         },
         {
-          "label": "Mode or state doesn't match what the tool expects",
+          "label": "Mode or state doesn't match what the tool expects", "issue": "mode or state doesn't match the tool",
           "short": "Mismatch",
           "next": "sc_cs"
         }
@@ -116,7 +116,7 @@
       "caution": "Only put the stack in IDLE first if your SOP says to. A VRE warned that manual IDLE swaps can make things worse (DTP-109894).",
       "help": "A stuck mode/state cleared after a cold start (DTP-112431)."
     },
-    "sc_esc": {
+    "sc_esc": { "phrase": "Stack or control state stuck, {issue}", "details": ["Screenshot: the stack mode and control state the tool shows, and the trip status in ATMS."],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "Operator-level stack and control-state steps are used up. Open a TS ticket and paste the handoff.",

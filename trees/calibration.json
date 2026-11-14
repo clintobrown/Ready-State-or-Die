@@ -3,7 +3,7 @@
   "id": "calibration",
   "title": "Calibration failure",
   "role": "category",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "status": "DRAFT",
   "sourceDocs": [
     "DTP TS tickets via Glean, Sep–Oct 2026"
@@ -17,22 +17,22 @@
       "source": "TS: DTP-110126, DTP-97082, DTP-108061",
       "options": [
         {
-          "label": "Failed, and names a sensor",
+          "label": "Failed, and names a sensor", "issue": "sensor failure",
           "short": "Sensor named",
           "next": "cal_sensor"
         },
         {
-          "label": "Failed almost immediately",
+          "label": "Failed almost immediately", "issue": "fails almost immediately",
           "short": "Failed fast",
           "next": "cal_cs"
         },
         {
-          "label": "Still running or buffering far too long",
+          "label": "Still running or buffering far too long", "issue": "stuck running or buffering",
           "short": "Stuck",
           "next": "cal_stuck"
         },
         {
-          "label": "Failed with no detail",
+          "label": "Failed with no detail", "issue": "no detail shown",
           "short": "No detail",
           "next": "cal_retry"
         }
@@ -44,12 +44,12 @@
       "source": "TS: DTP-110126, DTP-107987, DTP-110823",
       "options": [
         {
-          "label": "One camera or lidar failed",
+          "label": "One camera or lidar failed", "issue": "one camera or lidar failed",
           "short": "One sensor",
           "next": "cal_clean"
         },
         {
-          "label": "Several sensors found no targets",
+          "label": "Several sensors found no targets", "issue": "several sensors found no targets",
           "short": "No targets",
           "next": "cal_setup"
         },
@@ -193,7 +193,7 @@
       "text": "Calibration passed. Continue bringing the truck to ready state.",
       "source": "ReadyPath"
     },
-    "cal_esc": {
+    "cal_esc": { "phrase": "Calibration failing, {issue}", "details": ["Screenshot: the calibration result screen showing which sensor failed.", "Say if the same sensor has failed on this truck before."],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "Operator-level calibration steps are used up. Open a TS ticket and paste the handoff.",

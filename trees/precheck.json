@@ -1,0 +1,140 @@
+{
+  "$schema": "./schema.json",
+  "id": "precheck",
+  "title": "Pre-mission or pre-deploy check failed",
+  "role": "category",
+  "version": "0.2.1",
+  "status": "DRAFT",
+  "sourceDocs": [
+    "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), docs.google.com/document/d/1f33pt_ImWLqc8gB-IrQ8BNcO3kDr4RhnwY3p_rKIFaI"
+  ],
+  "start": "pc_what",
+  "nodes": {
+    "pc_what": {
+      "type": "question",
+      "text": "What does the failed check say?",
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Pre-Mission/Pre-Deploy Checks Failures",
+      "options": [
+        {
+          "label": "Pings fail for sensors", "issue": "sensor pings",
+          "short": "Sensor pings",
+          "next": "pc_cs"
+        },
+        {
+          "label": "Message suggests !pbtreset or !brakereset", "issue": "reset requested",
+          "short": "Reset asked",
+          "next": "pc_reset"
+        },
+        {
+          "label": "Timeout: uptime TCM or Credentialer", "issue": "uptime TCM / Credentialer timeout",
+          "short": "Timeout",
+          "next": "pc_wait"
+        },
+        {
+          "label": "Logging checklist: drives missing (pre-deploy)", "issue": "logging drives missing",
+          "short": "Drives missing",
+          "next": "pc_drives"
+        },
+        {
+          "label": "Logger preflight: PCIE Link Width",
+          "short": "Link width",
+          "next": "pc_lw"
+        },
+        {
+          "label": "Something else",
+          "short": "Other",
+          "next": "pc_cs"
+        }
+      ]
+    },
+    "pc_reset": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Reset done",
+      "text": "Run the reset the message names",
+      "steps": [
+        "Run the reset the failure message suggests: !pbtreset or !brakereset.",
+        "Re-run the checks."
+      ],
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Pre-Mission/Pre-Deploy Checks Failures",
+      "next": "pc_cs",
+      "resolvedNext": "pc_forvis",
+      "help": "The ! commands come up when you send them to yourself as a Slack direct message."
+    },
+    "pc_wait": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Waited",
+      "text": "Wait 3 to 5 minutes, then re-run the checks",
+      "steps": [
+        "Wait about 3 to 5 more minutes.",
+        "Re-run the checks."
+      ],
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Pre-Mission/Pre-Deploy Checks Failures",
+      "next": "pc_cs",
+      "resolvedNext": "pc_forvis",
+      "help": "For pings that fail on a timeout, such as uptime TCM or Credentialer."
+    },
+    "pc_drives": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Proceeded",
+      "text": "Deploy now, insert the drives before the mission",
+      "steps": [
+        "You may tap Proceed Anyway to deploy without drives inserted.",
+        "Before starting the mission, insert the logging drives and make sure they pass the pre-mission readiness checks."
+      ],
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Pre-Mission/Pre-Deploy Checks Failures",
+      "next": "pc_cs",
+      "resolvedNext": "pc_forvis",
+      "help": "For logging checklists about missing drives during pre-deploy readiness checks."
+    },
+    "pc_lw": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "!linkwidth",
+      "text": "Run !linkwidth",
+      "steps": [
+        "Run the !linkwidth steps. The cold start can wait until the deploy is finished.",
+        "You may tap Proceed Anyway to deploy with or without the drives inserted.",
+        "After the deploy, cold start and re-run the check."
+      ],
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Pre-Mission/Pre-Deploy Checks Failures",
+      "next": "pc_esc_lw",
+      "resolvedNext": "pc_forvis",
+      "help": "For logger preflight check failures on PCIE Link Width. The ! commands come up when you send them to yourself as a Slack direct message."
+    },
+    "pc_forvis": {
+      "type": "terminal",
+      "terminal": "RESOLVED",
+      "text": "Checks are passing without VRE. Post a /vreforvis with the steps you took, a sysreport if possible, and how long you spent troubleshooting.",
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Purpose"
+    },
+    "pc_cs": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Cold start",
+      "text": "Cold start, then re-run the checks",
+      "steps": [
+        "Run the cold start steps for your platform: !coldstart (a579m), !volvocoldstart (asvat) or !a2cs (LTS).",
+        "Re-run the checks."
+      ],
+      "source": "TS: generic cold-start step, same as the other trees (VO site practice, Oct 2026). Added so operator options run out before escalating; the Dev Ops guide itself goes to VRE at this point.",
+      "next": "pc_esc",
+      "resolvedNext": "pc_forvis",
+      "help": "The ! commands come up when you send them to yourself as a Slack direct message."
+    },
+    "pc_esc_lw": { "phrase": "PCIE Link Width still failing after !linkwidth and a cold start", "details": ["Screenshot: the logger preflight failure.", "This one also goes to HW Diagnostics and FAST."],
+      "type": "terminal",
+      "terminal": "ESCALATE_VRE",
+      "text": "PCIE Link Width is still failing after !linkwidth and a cold start. Escalate to VRE, HW Diagnostics and FAST, and paste the handoff.",
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Pre-Mission/Pre-Deploy Checks Failures"
+    },
+    "pc_esc": { "phrase": "Pre-mission/pre-deploy check failing, {issue}", "details": ["Screenshot: the failed check and its message.", "Attach a sysreport if you can."],
+      "type": "terminal",
+      "terminal": "ESCALATE_VRE",
+      "text": "The check is still failing. Escalate to VRE in a #vops_troubleshooting thread (Scout Troubleshooter, Aurora Mobile App, or /vrehelp) and paste the handoff.",
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Purpose"
+    }
+  }
+}

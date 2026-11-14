@@ -3,10 +3,12 @@
   "id": "compute_ready",
   "title": "No ready state (compute or checklist faults)",
   "role": "category",
-  "version": "0.4.9",
+  "version": "0.5.2",
   "status": "DRAFT",
   "sourceDocs": [
-    "DTP TS tickets via Glean, Aug–Oct 2026"
+    "DTP TS tickets via Glean, Aug–Oct 2026",
+    "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), docs.google.com/document/d/1f33pt_ImWLqc8gB-IrQ8BNcO3kDr4RhnwY3p_rKIFaI",
+    "Dev & Bring-Up BOLOs (reviewed 11/6/2026), in the Dev Ops Troubleshooting Guide"
   ],
   "start": "cr_where",
   "nodes": {
@@ -46,28 +48,33 @@
       "source": "TS: DTP-110498, DTP-105363, DTP-106551, DTP-109224, DTP-111734",
       "options": [
         {
-          "label": "Driver absent / seat belt",
+          "label": "Driver absent / seat belt", "issue": "driver absent checklist",
           "short": "Driver absent",
           "next": "cr_seat"
         },
         {
-          "label": "LTE or connectivity",
+          "label": "LTE or connectivity", "issue": "LTE/connectivity checklist",
           "short": "LTE",
           "next": "cr_lte"
         },
         {
-          "label": "Pose, localization, or breadcrumbs",
+          "label": "Pose, localization, or breadcrumbs", "issue": "pose/localization checklists",
           "short": "Pose",
           "next": "cr_loopq"
         },
         {
-          "label": "PBT reset required",
+          "label": "PBT reset required", "issue": "PBT reset required",
           "short": "PBT",
           "platforms": ["peterbilt"],
           "next": "cr_pbt"
         },
         {
-          "label": "Something else, or many errors",
+          "label": "A named Prevent Auto or MRM latching checklist",
+          "short": "Prevent Auto",
+          "next": "cr_pa"
+        },
+        {
+          "label": "Something else, or many errors", "issue": "multiple checklists",
           "short": "Other",
           "next": "cr_cs"
         }
@@ -209,7 +216,7 @@
       "text": "Ready state reached. Continue the mission.",
       "source": "ReadyPath"
     },
-    "cr_esc": {
+    "cr_esc": { "phrase": "Can't obtain Ready State, {issue}", "details": ["Screenshot: the failing (red) checklist items in Scout, or the error in TApp.", "If it says 'Hotstart detected' after a cold start, mention it."],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "Operator-level ready-state steps are used up. Open a TS ticket and paste the handoff.",
@@ -261,6 +268,156 @@
       "source": "TS: DTP-112726, DTP-109224, DTP-105672, DTP-112417 · VO site practice (Oct 2026)",
       "next": "cr_esc",
       "resolvedNext": "cr_resolved"
+    },
+    "cr_pa": {
+      "type": "question",
+      "text": "Which Prevent Auto or MRM latching checklist is active?",
+      "help": "Use Scout to look for Prevent Auto or MRM latching checklists. Remote Assistance can filter checklist history for them. Match on the checklist name. Pose and localization covers dragonfly local poses, tile_alignment global poses, ftc.aci.dragonfly.pose.invalid and ftc.aci.local_pose_transformer.pose_a.invalid.",
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Unable to Obtain Ready State/Prevent Auto Checklists",
+      "options": [
+        {
+          "label": "vehicle_health_monitor.brake_non_critical", "issue": "brake_non_critical checklist",
+          "short": "Brake non-crit",
+          "next": "cr_pa_brake"
+        },
+        {
+          "label": "propulsion_critical_preliminary_detection", "issue": "propulsion_critical_preliminary_detection checklist",
+          "short": "Propulsion",
+          "next": "cr_pa_pbt"
+        },
+        {
+          "label": "aci_detected_fault.aggregated_failure", "issue": "aci_detected_fault checklist",
+          "short": "ACI fault",
+          "next": "cr_pa_pbt"
+        },
+        {
+          "label": "transmission_not_ready", "issue": "transmission_not_ready checklist",
+          "short": "Transmission",
+          "next": "cr_pa_trans"
+        },
+        {
+          "label": "control_status.system_inoperable_for_autonomy", "issue": "system_inoperable_for_autonomy checklist",
+          "short": "Inoperable",
+          "next": "cr_pa_auth"
+        },
+        {
+          "label": "Pose or localization invalid, or a trailer_pose MRM", "issue": "pose/localization checklists",
+          "short": "Localization",
+          "next": "cr_loopq"
+        },
+        {
+          "label": "Logging or logger checklist", "issue": "logger checklist",
+          "short": "Logger",
+          "next": "cr_pa_log"
+        },
+        {
+          "label": "Trailer weight checklist", "issue": "trailer weight checklist",
+          "short": "Trailer weight",
+          "next": "cr_pa_weight"
+        },
+        {
+          "label": "None of these", "issue": "Prevent Auto checklist",
+          "short": "None",
+          "next": "cr_cs"
+        }
+      ]
+    },
+    "cr_pa_brake": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "!brakereset",
+      "text": "Run !brakereset",
+      "steps": [
+        "Send yourself !brakereset as a Slack direct message to pull up the steps.",
+        "Follow the brake reset steps.",
+        "Recheck the checklist in Scout and retry ready state."
+      ],
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Unable to Obtain Ready State/Prevent Auto Checklists",
+      "next": "cr_cs",
+      "resolvedNext": "cr_forvis",
+      "help": "For platform.m7_b.vehicle_health_monitor.brake_non_critical.active. The guide's command list describes !brakereset as the brake reset for platforms other than PBT, and !pbtreset as the one for Peterbilt trucks."
+    },
+    "cr_pa_pbt": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "!pbtreset",
+      "text": "Run !pbtreset",
+      "steps": [
+        "Send yourself !pbtreset as a Slack direct message to pull up the steps.",
+        "Follow the reset steps.",
+        "Recheck the checklist in Scout and retry ready state."
+      ],
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Unable to Obtain Ready State/Prevent Auto Checklists",
+      "next": "cr_cs",
+      "resolvedNext": "cr_forvis",
+      "help": "For platform.m7_a.vehicle_health_monitor.propulsion_critical_preliminary_detection.active and platform.m7_a.vehicle_health_monitor.aci_detected_fault.aggregated_failure. The guide's command list describes !pbtreset as the platform-specific brake reset for Peterbilt trucks."
+    },
+    "cr_pa_trans": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Neutral 5 s",
+      "text": "Stop and hold Neutral for more than 5 seconds",
+      "steps": [
+        "Come to a stop.",
+        "Switch into Neutral and leave it there for more than 5 seconds.",
+        "Recheck the checklist in Scout and retry ready state."
+      ],
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Unable to Obtain Ready State/Prevent Auto Checklists",
+      "next": "cr_cs",
+      "resolvedNext": "cr_forvis",
+      "help": "For platform.m7_b.vehicle_health_monitor.transmission_not_ready.active."
+    },
+    "cr_pa_auth": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Re-authorized",
+      "text": "Re-authorize the vehicle in the Aurora Mobile App",
+      "steps": [
+        "Make sure the vehicle is immobilized. It has to be for this.",
+        "Re-authorize the vehicle using the Aurora Mobile App workflow.",
+        "Recheck the checklist in Scout and retry ready state."
+      ],
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Unable to Obtain Ready State/Prevent Auto Checklists",
+      "next": "cr_cs",
+      "resolvedNext": "cr_forvis",
+      "help": "For compute.control.control_status.system_inoperable_for_autonomy.active."
+    },
+    "cr_pa_log": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Bricks reseated",
+      "text": "Idle stack, reseat the bricks, cold start",
+      "steps": [
+        "Make sure the vehicle is in the Idle stack.",
+        "Reseat the bricks.",
+        "Cold start.",
+        "Recheck the logger checklist in Scout, or the logger System Readiness check in the Aurora Mobile App."
+      ],
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Unable to Obtain Ready State/Prevent Auto Checklists",
+      "next": "cr_cs2",
+      "resolvedNext": "cr_forvis",
+      "help": "Covers logging and logger checklists, and logger-related System Readiness checks in the Aurora Mobile App."
+    },
+    "cr_pa_weight": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Weight entered",
+      "text": "Enter a trailer weight that keeps the total under 80,000 lbs",
+      "steps": [
+        "The RS VO enters a total weight of about 42,900 lbs in trailer info: as close as possible to the actual weight while keeping truck plus trailer under 80,000 lbs.",
+        "Recheck the trailer weight checklist in Scout and retry ready state."
+      ],
+      "source": "Dev & Bring-Up BOLOs (reviewed 11/6/2026), MAX Loaded Trailer Weight Entry",
+      "next": "cr_cs",
+      "resolvedNext": "cr_forvis",
+      "help": "Temporary BOLO for Perseus trucks, last reviewed 11/6/2026. A trailer weight checklist prevents autonomy when the max gross weight entered is too close to the 80,000 lb truck-plus-trailer limit. No fix yet; the plan is to reduce the load in max-loaded trailers so the real weight can be entered.",
+      "caution": "This is dev and bring-up guidance. It doesn't change what the Terminals SOP says about entering scale-ticket weights."
+    },
+    "cr_forvis": {
+      "type": "terminal",
+      "terminal": "RESOLVED",
+      "text": "Ready state reached without VRE. Post a /vreforvis with the steps you took, a sysreport if possible, and how long you spent troubleshooting.",
+      "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Purpose"
     }
   }
 }

@@ -3,7 +3,7 @@
   "id": "launch_sequence",
   "title": "Launch a truck",
   "role": "sequence",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "status": "DRAFT",
   "sourceDocs": [
     "Terminals SOP 500-009358-01 (rev Oct 13, 2026)",
@@ -73,7 +73,7 @@
         }
       ]
     },
-    "ls_esc_env": {
+    "ls_esc_env": { "phrase": "Truck is in the wrong cloud environment, needs moving to the correct one", "details": ["Screenshot: the /checkenv result showing the current environment."],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "Stop. The truck is in the wrong environment. Open a VRE thread and paste the summary below.",
@@ -228,7 +228,7 @@
         }
       ]
     },
-    "ls_esc_conn": {
+    "ls_esc_conn": { "phrase": "Truck won't connect in TApp after the switch check and a cold start", "details": ["Screenshot: TApp showing the truck disconnected."],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "Truck won't connect after the switch check and one cold start.",
@@ -262,7 +262,7 @@
       "next": "ls_esc_disk",
       "resolvedNext": "ls_p3"
     },
-    "ls_esc_disk": {
+    "ls_esc_disk": { "phrase": "Logging disk light still off after two reseats", "details": ["Photo: the logging disk lights. Say which one is dark."],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "Logging disk light still off after two reseats.",
@@ -409,7 +409,7 @@
       "next": "ls_esc_disp_trip",
       "resolvedNext": "ls_p51"
     },
-    "ls_esc_disp_trip": {
+    "ls_esc_disp_trip": { "phrase": "Trip isn't showing in TApp for this truck", "details": ["Screenshot: the TApp Trips tab, and the order in ATMS."],
       "type": "terminal",
       "terminal": "ESCALATE_DISPATCH",
       "text": "The trip still isn't showing. This is a Dispatch fix, not a TS thread.",
@@ -429,14 +429,14 @@
       "next": "ls_esc_stale",
       "resolvedNext": "ls_p51"
     },
-    "ls_esc_stale": {
+    "ls_esc_stale": { "phrase": "A stale trip is blocking the new trip in TApp", "details": ["Screenshot: the stale trip in TApp."],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "A stale trip is blocking this one. VRE has to clear it.",
       "source": "TS: DTP-111692, DTP-102071, DTP-105733",
       "handoffNote": "Likely ask: move the stack to IDLE, then refresh TApp (DTP-111692), or clear the blocking trip with find-blockers (DTP-102071)."
     },
-    "ls_esc_disp_done": {
+    "ls_esc_disp_done": { "phrase": "Order shows completed before this leg ran", "details": ["Screenshot: the order status in ATMS."],
       "type": "terminal",
       "terminal": "ESCALATE_DISPATCH",
       "text": "The order shows completed before this leg ran. Dispatch has to fix the order.",
@@ -509,7 +509,7 @@
       "next": "ls_esc_tds",
       "resolvedNext": "ls_p52"
     },
-    "ls_esc_tds": {
+    "ls_esc_tds": { "phrase": "Trip Data Sync still fails after a retry on ethernet", "details": ["Screenshot: the exact error text in TApp."],
       "type": "terminal",
       "terminal": "ESCALATE_TS",
       "text": "Trip Data Sync still fails after a retry on ethernet.",
@@ -529,14 +529,14 @@
       "next": "ls_esc_ts",
       "resolvedNext": "ls_p52"
     },
-    "ls_esc_disp_atlas": {
+    "ls_esc_disp_atlas": { "phrase": "Trip error says request support, do not retry", "details": ["Screenshot: the full error in TApp."],
       "type": "terminal",
       "terminal": "ESCALATE_DISPATCH",
       "text": "The error says to request support and not to retry. Dispatch regenerates the trip.",
       "source": "TS: DTP-109242, DTP-106173, DTP-104622",
       "handoffNote": "Ask Dispatch to regenerate the external trip with a valid pickup and drop-off; that moved the trip back to Preparing and cleared the atlas error (DTP-109242)."
     },
-    "ls_esc_release": {
+    "ls_esc_release": { "phrase": "Permission check failed: software not of release", "details": ["Screenshot: the permission check error. Include the build ID."],
       "type": "terminal",
       "terminal": "ESCALATE_TS",
       "text": "Permission check failed: software not of release.",
@@ -603,21 +603,21 @@
       "next": "ls_esc_wm",
       "resolvedNext": "ls_p53"
     },
-    "ls_esc_wm": {
+    "ls_esc_wm": { "phrase": "Weight entry says incorrect operating mode with the stack in Autonomous", "details": ["Screenshot: the error and the current stack mode."],
       "type": "terminal",
       "terminal": "ESCALATE_TS",
       "text": "Still 'incorrect operating mode' with the stack in Autonomous.",
       "source": "TS: DTP-109799, DTP-109560",
       "handoffNote": "Likely ask: reset the task to the Preparing stage (DTP-109799 workaround)."
     },
-    "ls_esc_spin": {
+    "ls_esc_spin": { "phrase": "Weight and KPRA submit times out", "details": ["Screenshot: the submit screen and any error (for example SIGNAL_TIMEOUT)."],
       "type": "terminal",
       "terminal": "ESCALATE_TS",
       "text": "Weight and KPRA submit times out.",
       "source": "TS: DTP-112180, DTP-109570",
       "handoffNote": "Include the error if TApp shows one (e.g. SIGNAL_TIMEOUT)."
     },
-    "ls_esc_bobtail": {
+    "ls_esc_bobtail": { "phrase": "Can't submit weight for bobtail in TApp (mass cannot be zero)", "details": ["Screenshot: the error."],
       "type": "terminal",
       "terminal": "ESCALATE_TS",
       "text": "Known bug: TApp can't submit weight for bobtail.",
@@ -688,7 +688,7 @@
         }
       ]
     },
-    "ls_esc_diag": {
+    "ls_esc_diag": { "phrase": "Diagnostics present in TApp before launch", "details": ["Screenshot: the Diagnostics list in TApp."],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "Diagnostics are present. The SOP sends these to VRE.",
@@ -821,19 +821,19 @@
       "text": "Launched. The trip is departing.",
       "source": "Launch Aid"
     },
-    "ls_esc_ts": {
+    "ls_esc_ts": { "phrase": "Launch blocked, no listed fix", "details": ["Screenshot: the TApp screen at the step that failed."],
       "type": "terminal",
       "terminal": "ESCALATE_TS",
       "text": "No listed fix for this. Open a TS thread with the summary below.",
       "source": "Launch Aid escalation gate"
     },
-    "ls_esc_dispatch": {
+    "ls_esc_dispatch": { "phrase": "Order or trip problem is blocking launch", "details": ["Screenshot: the order in ATMS and the trip in TApp."],
       "type": "terminal",
       "terminal": "ESCALATE_DISPATCH",
       "text": "This is an order or trip problem. Contact Dispatch, not TS.",
       "source": "Launch Aid escalation gate"
     },
-    "ls_stop": {
+    "ls_stop": { "phrase": "STOP called: safety, hardware or compute symptom. Truck immobilized, nothing touched", "details": ["Describe exactly what you saw or heard.", "Photo, only if it's safe to take one."],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "Stopped for a safety, hardware, or compute symptom. No fixes were tried.",

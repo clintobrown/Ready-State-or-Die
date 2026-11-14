@@ -3,7 +3,7 @@
   "id": "startup",
   "title": "Start-up / cold start process",
   "role": "sequence",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "status": "DRAFT",
   "sourceDocs": [
     "Cold-start steps from calibration.json (VO site practice, Oct 2026)"
@@ -111,7 +111,7 @@
       "text": "Start-up complete. Continue bringing the truck to ready state.",
       "source": "ReadyPath"
     },
-    "su_esc": {
+    "su_esc": { "phrase": "Truck didn't come up after a cold start", "details": ["Say which start-up step it stopped at.", "Photo: the PWR A/B LEDs."],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "The truck didn't come up after the start-up process. Open a TS ticket and paste the handoff.",
