@@ -51,3 +51,6 @@ A question or action node can carry `"link": {"label": "Open ATMS", "url": "http
 
 ## "Help me do this" button
 A question or action node can carry `"howto": ["...", "..."]`. The step then shows a **Help me do this** button; tapping it opens a numbered list under the step. Use it for the detail a new operator needs and an experienced one doesn't: which screen or field to open, what a correct value looks like, and what the common wrong ones look like. Keep the main `steps` short and put the detail here.
+
+## Links inside steps
+Any step, help line or "Help me do this" line can hold a tappable link, written as `[label](https://address)`, e.g. `"Check [Package Tracker](https://...) to make sure the ticket is deployable."` It opens in a new tab. If a step sends the operator to a page, put the link in that step. Only `https://` addresses become links.

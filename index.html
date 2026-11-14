@@ -129,6 +129,7 @@ details.howto>summary::-webkit-details-marker{display:none}
 details.howto[open]>summary{border-style:dashed}
 .how{margin:12px 0 0;padding-left:26px;font-size:18px;line-height:1.4}
 .how li{margin:8px 0}
+a.inl{color:inherit;font-weight:800;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
 a.btn{display:flex;align-items:center;justify-content:center;text-decoration:none;text-align:center}
 pre.sum.phrase{font-size:21px;line-height:1.3;max-height:none}
 pre.sum{white-space:pre-wrap;word-break:break-word;margin:0;font:600 16px/1.45 "Roboto Mono",ui-monospace,Menlo,monospace;background:var(--card);border:3px solid var(--line);border-radius:12px;padding:12px;max-height:42vh;overflow:auto}
@@ -662,7 +663,8 @@ function entryBody(){
 }
 
 const resumes = n => !!(n.resolvedNext && (()=>{ const t=getNode(S.s.cur.tree,n.resolvedNext); return t && t.type!=='terminal'; })()) || !!(S.s.calls && S.s.calls.length);
-const howBtn = n => [].concat(n.howto||[]).length ? `<details class="howto"><summary class="btn sm">Help me do this</summary><ol class="how">${[].concat(n.howto).map(x=>`<li>${esc(x)}</li>`).join('')}</ol></details>` : '';
+const rich = t => esc(t).replace(/\[([^\]]+)\]\((https:\/\/[^\s)]+)\)/g, '<a class="inl" href="$2" target="_blank" rel="noopener">$1</a>');
+const howBtn = n => [].concat(n.howto||[]).length ? `<details class="howto"><summary class="btn sm">Help me do this</summary><ol class="how">${[].concat(n.howto).map(x=>`<li>${rich(x)}</li>`).join('')}</ol></details>` : '';
 const linkBtn = n => n.link && /^https:\/\//.test(n.link.url||'') ? `<a class="btn sm" href="${esc(n.link.url)}" target="_blank" rel="noopener" data-act="openLink">${esc(n.link.label)} ↗</a><p class="help">Opens in a new tab and copies the truck ID, ready to paste into the search.</p>` : '';
 const copyLabel = () => S.s && S.s.outcome==='ESCALATE_DISPATCH' ? 'Copy message for Dispatch' : 'Copy for TS thread';
 function runBody(){
@@ -678,21 +680,21 @@ function runBody(){
       return `<p class="step-no">${esc(n.phase||'')}</p>
         ${n.tapp_changed?`<span class="badge">Updated TApp: this screen changed</span>`:''}
         <h1 class="q">${esc(v.text)}</h1>
-        ${v.help?`<p class="help">${esc(v.help)}</p>`:''}
+        ${v.help?`<p class="help">${rich(v.help)}</p>`:''}
         ${linkBtn(n)}${howBtn(n)}
         <div class="done"><b>Done when</b>${esc(v.done_when)}</div>
         ${phBanner(n)}
         <div class="answers">${opts.map(o=>`<button class="btn ${cls(o)}" data-act="ans" data-arg="${o._i}">${esc(o.label)}</button>`).join('')}</div>`;
     }
     return `${phBanner(n)}<p class="step-no">Question ${qn}</p><h1 class="q">${esc(v.text)}</h1>
-      ${v.help?`<p class="help">${esc(v.help)}</p>`:''}
+      ${v.help?`<p class="help">${rich(v.help)}</p>`:''}
       ${linkBtn(n)}${howBtn(n)}
       <div class="answers">${opts.map(o=>`<button class="btn ans" data-act="ans" data-arg="${o._i}">${esc(o.label)}</button>`).join('')}</div>`;
   }
   if(n.type==='input'){
     const qn = s.steps.filter(x=>x.kind==='question').length + 1;
     return `${phBanner(n)}<p class="step-no">Question ${qn}</p><h1 class="q">${esc(v.text)}</h1>
-      ${v.help?`<p class="help">${esc(v.help)}</p>`:''}
+      ${v.help?`<p class="help">${rich(v.help)}</p>`:''}
       <textarea id="inp" placeholder="${esc(n.placeholder||'')}"></textarea>
       <div class="answers"><button class="btn sig" data-act="inputDone" data-arg="1">Continue</button><button class="btn sm" data-act="inputDone" data-arg="0">Skip</button></div>`;
   }
@@ -705,7 +707,7 @@ function runBody(){
       <div class="answers">${["Doesn't apply to this truck","Not safe right now","Not authorized or not trained","Tool won't allow it"].map(r=>`<button class="btn ans" data-act="cantwhy" data-arg="${esc(r)}">${esc(r)}</button>`).join('')}</div>`;
     return `${phBanner(n)}<section class="act"><div class="act-head"><span>Do this</span></div><div class="act-body">
       <h1 class="q">${esc(v.text)}</h1>
-      ${(v.steps||[]).length?`<ol class="steps">${v.steps.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`:''}
+      ${(v.steps||[]).length?`<ol class="steps">${v.steps.map(x=>`<li>${rich(x)}</li>`).join('')}</ol>`:''}
       ${v.caution?`<div class="caution">${esc(v.caution)}</div>`:''}
       ${linkBtn(n)}${howBtn(n)}</div></section>
       <div class="answers"><button class="btn sig" data-act="done">${esc(v.doneLabel||'Done, I did this')}</button><button class="btn sm" data-act="cant">I can't do this step</button></div>`;
