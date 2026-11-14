@@ -1,9 +1,9 @@
 {
   "$schema": "./schema.json",
   "id": "tapp_step",
-  "title": "Start here",
+  "title": "T/S Something Else",
   "role": "category",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "status": "DRAFT",
   "sourceDocs": [
     "DTP TS tickets via Glean, Aug–Oct 2026"

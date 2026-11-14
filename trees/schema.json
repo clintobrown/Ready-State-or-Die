@@ -304,6 +304,12 @@
           },
           "description": "question or action only. Adds a button that opens this address in a new tab and copies the run's truck ID to the clipboard."
         },
+        "verify": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "text": { "type": "string" }, "yes": { "type": "string" }, "no": { "type": "string" } },
+          "description": "action only, optional. Replaces the follow-up 'Did this resolve it?' and its two buttons, e.g. for a procedure whose outcome is pass or fail. 'yes' follows resolvedNext, 'no' follows next."
+        },
         "howto": {
           "type": "array",
           "items": { "type": "string" },

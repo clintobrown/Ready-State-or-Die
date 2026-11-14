@@ -1,5 +1,5 @@
 {
-  "manifestVersion": "0.4.0",
+  "manifestVersion": "0.5.0",
   "tools": [
     {
       "id": "scout",
@@ -31,6 +31,7 @@
     "tapp_step.json",
     "compute_ready.json",
     "stack_control.json",
+    "scout_cal.json",
     "startup.json",
     "launch_sequence.json",
     "launch.json",
