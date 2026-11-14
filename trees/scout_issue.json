@@ -3,7 +3,7 @@
   "id": "scout_issue",
   "title": "Scout or module crash, freeze, or mission won't start",
   "role": "category",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "status": "DRAFT",
   "sourceDocs": [
     "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), docs.google.com/document/d/1f33pt_ImWLqc8gB-IrQ8BNcO3kDr4RhnwY3p_rKIFaI",
@@ -17,22 +17,30 @@
       "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Module Crash; Scout Crash; Unable to Start Mission",
       "options": [
         {
-          "label": "A module shows red failed or stopped in Scout", "issue": "module crash",
+          "label": "A module shows red failed or stopped in Scout",
+          "issue": "module crash",
           "short": "Module crash",
           "next": "si_mod"
         },
         {
-          "label": "Scout crashed", "issue": "Scout crashed",
+          "label": "Scout crashed",
+          "issue": "Scout crashed",
           "short": "Scout crash",
           "next": "si_crash"
         },
         {
-          "label": "Scout is frozen: map and lidar don't update", "issue": "Scout frozen",
+          "label": "Scout is frozen: map and lidar don't update",
+          "issue": "Scout frozen",
           "short": "Scout frozen",
-          "next": "si_freeze"
+          "next": "si_freeze",
+          "platforms": [
+            "volvo",
+            "international"
+          ]
         },
         {
-          "label": "Can't start the mission", "issue": "can't start the mission",
+          "label": "Can't start the mission",
+          "issue": "can't start the mission",
           "short": "No mission start",
           "next": "si_start"
         }
@@ -64,7 +72,39 @@
       "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Module Crash",
       "next": "si_esc",
       "resolvedNext": "si_forvis",
-      "help": "If the trip or mission was started in the Aurora Mobile App: ask RAS to move the vehicle to the IDLE stack, then continue the cold start steps; after the vehicle is back on, RA moves it back to the AUTONOMOUS stack. If it was started in Scout, you don't need RA."
+      "help": "If the trip or mission was started in the Aurora Mobile App: ask RAS to move the vehicle to the IDLE stack, then continue the cold start steps; after the vehicle is back on, RA moves it back to the AUTONOMOUS stack. If it was started in Scout, you don't need RA.",
+      "variants": [
+        {
+          "when": {
+            "platform": "peterbilt"
+          },
+          "steps": [
+            "Make sure the vehicle is immobilized.",
+            "Generate a sysreport from the Scout UI.",
+            "Run the !coldstart steps."
+          ]
+        },
+        {
+          "when": {
+            "platform": "volvo"
+          },
+          "steps": [
+            "Make sure the vehicle is immobilized.",
+            "Generate a sysreport from the Scout UI.",
+            "Run the !volvocoldstart steps."
+          ]
+        },
+        {
+          "when": {
+            "platform": "international"
+          },
+          "steps": [
+            "Make sure the vehicle is immobilized.",
+            "Generate a sysreport from the Scout UI.",
+            "Run the !a2cs steps."
+          ]
+        }
+      ]
     },
     "si_crash": {
       "type": "action",
@@ -93,7 +133,7 @@
       "source": "Dev & Bring-Up BOLOs (reviewed 11/6/2026), Scout Freezing",
       "next": "si_crash",
       "resolvedNext": "si_forvis",
-      "help": "Temporary BOLO, last reviewed 11/6/2026. Some dev testing installs a modified Scout that doesn't always get reverted afterwards. The BOLO's contact if it keeps freezing is Brian Witt (@bwitt)."
+      "help": "Temporary BOLO for Perseus trucks (the RSI laptop), last reviewed 11/6/2026. Some dev testing installs a modified Scout that doesn't always get reverted afterwards. The BOLO's contact if it keeps freezing is Brian Witt (@bwitt)."
     },
     "si_start": {
       "type": "action",
@@ -116,7 +156,12 @@
       "text": "Working again without VRE. Post a /vreforvis with the steps you took, a sysreport if possible, and how long you spent troubleshooting.",
       "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Purpose"
     },
-    "si_esc": { "phrase": "Scout/module problem, {issue}", "details": ["Attach the sysreport.", "Screenshot: the failed module or the error in Scout."],
+    "si_esc": {
+      "phrase": "Scout/module problem, {issue}",
+      "details": [
+        "Attach the sysreport.",
+        "Screenshot: the failed module or the error in Scout."
+      ],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "Still not working. Escalate to VRE in a #vops_troubleshooting thread (Scout Troubleshooter, Aurora Mobile App, or /vrehelp) and paste the handoff.",

@@ -3,7 +3,7 @@
   "id": "mobile_app",
   "title": "Aurora Mobile App: trip, connection or deploy",
   "role": "category",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "status": "DRAFT",
   "sourceDocs": [
     "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), docs.google.com/document/d/1f33pt_ImWLqc8gB-IrQ8BNcO3kDr4RhnwY3p_rKIFaI"
@@ -17,32 +17,38 @@
       "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Aurora Mobile App Workflow",
       "options": [
         {
-          "label": "Can't find the mission or trip", "issue": "can't find the mission/trip",
+          "label": "Can't find the mission or trip",
+          "issue": "can't find the mission/trip",
           "short": "No trip",
           "next": "ma_env"
         },
         {
-          "label": "Vehicle shows disconnected", "issue": "vehicle shows disconnected",
+          "label": "Vehicle shows disconnected",
+          "issue": "vehicle shows disconnected",
           "short": "Disconnected",
           "next": "ma_disc"
         },
         {
-          "label": "Software Verification check is missing", "issue": "Software Verification check missing",
+          "label": "Software Verification check is missing",
+          "issue": "Software Verification check missing",
           "short": "No SW check",
           "next": "ma_sv"
         },
         {
-          "label": "Remote deploy fails right away", "issue": "remote deploy fails immediately",
+          "label": "Remote deploy fails right away",
+          "issue": "remote deploy fails immediately",
           "short": "Deploy fails",
           "next": "ma_dep"
         },
         {
-          "label": "Pull done, but can't get to Trip Data Sync", "issue": "can't proceed to Trip Data Sync",
+          "label": "Pull done, but can't get to Trip Data Sync",
+          "issue": "can't proceed to Trip Data Sync",
           "short": "Stuck",
           "next": "ma_stuck"
         },
         {
-          "label": "Trip Data Sync fails", "issue": "Trip Data Sync fails",
+          "label": "Trip Data Sync fails",
+          "issue": "Trip Data Sync fails",
           "short": "TDS fails",
           "next": "ma_tds"
         }
@@ -88,7 +94,36 @@
       "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Aurora Mobile App Workflow",
       "next": "ma_esc",
       "resolvedNext": "ma_forvis",
-      "help": "The ! commands come up when you send them to yourself as a Slack direct message."
+      "help": "The ! commands come up when you send them to yourself as a Slack direct message.",
+      "variants": [
+        {
+          "when": {
+            "platform": "peterbilt"
+          },
+          "steps": [
+            "Run the !coldstart steps.",
+            "Check the Aurora Mobile App again."
+          ]
+        },
+        {
+          "when": {
+            "platform": "volvo"
+          },
+          "steps": [
+            "Run the !volvocoldstart steps.",
+            "Check the Aurora Mobile App again."
+          ]
+        },
+        {
+          "when": {
+            "platform": "international"
+          },
+          "steps": [
+            "Run the !a2cs steps.",
+            "Check the Aurora Mobile App again."
+          ]
+        }
+      ]
     },
     "ma_sv": {
       "type": "action",
@@ -143,8 +178,8 @@
       "text": "Retry the task from the Idle stack",
       "steps": [
         "Retry the failed task.",
-        "Make sure you're in the Idle stack (confirm with Scout). If you aren't, move the vehicle to IDLE or !coldstart, then try this step again.",
-        "If the vehicle successfully pulled software, !coldstart and try this step again."
+        "Make sure you're in the Idle stack (confirm with Scout). If you aren't, move the vehicle to IDLE or cold start, then try this step again.",
+        "If the vehicle successfully pulled software, cold start and try this step again."
       ],
       "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Aurora Mobile App Workflow",
       "next": "ma_esc",
@@ -156,7 +191,11 @@
       "text": "Working again without VRE. Post a /vreforvis with the steps you took, a sysreport if possible, and how long you spent troubleshooting.",
       "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Purpose"
     },
-    "ma_esc": { "phrase": "Aurora Mobile App problem, {issue}", "details": ["Screenshot: the Aurora Mobile App screen, including which environment it's set to."],
+    "ma_esc": {
+      "phrase": "Aurora Mobile App problem, {issue}",
+      "details": [
+        "Screenshot: the Aurora Mobile App screen, including which environment it's set to."
+      ],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "Still not working. Escalate to VRE in a #vops_troubleshooting thread (Scout Troubleshooter or /vrehelp) and paste the handoff.",

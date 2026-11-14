@@ -3,7 +3,7 @@
   "id": "compute_ready",
   "title": "No ready state (compute or checklist faults)",
   "role": "category",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "status": "DRAFT",
   "sourceDocs": [
     "DTP TS tickets via Glean, Aug–Oct 2026",
@@ -281,12 +281,12 @@
           "next": "cr_pa_brake"
         },
         {
-          "label": "propulsion_critical_preliminary_detection", "issue": "propulsion_critical_preliminary_detection checklist",
+          "label": "propulsion_critical_preliminary_detection", "platforms": ["peterbilt"], "issue": "propulsion_critical_preliminary_detection checklist",
           "short": "Propulsion",
           "next": "cr_pa_pbt"
         },
         {
-          "label": "aci_detected_fault.aggregated_failure", "issue": "aci_detected_fault checklist",
+          "label": "aci_detected_fault.aggregated_failure", "platforms": ["peterbilt"], "issue": "aci_detected_fault checklist",
           "short": "ACI fault",
           "next": "cr_pa_pbt"
         },
@@ -311,7 +311,7 @@
           "next": "cr_pa_log"
         },
         {
-          "label": "Trailer weight checklist", "issue": "trailer weight checklist",
+          "label": "Trailer weight checklist", "platforms": ["volvo", "international"], "issue": "trailer weight checklist",
           "short": "Trailer weight",
           "next": "cr_pa_weight"
         },
@@ -322,7 +322,7 @@
         }
       ]
     },
-    "cr_pa_brake": {
+    "cr_pa_brake": { "variants": [{"when": {"platform": "peterbilt"}, "text": "Run !pbtreset", "steps": ["Send yourself !pbtreset as a Slack direct message to pull up the steps.", "Follow the reset steps.", "Recheck the checklist in Scout and retry ready state."]}],
       "type": "action",
       "authorizedRole": "VO",
       "short": "!brakereset",
@@ -335,7 +335,7 @@
       "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Unable to Obtain Ready State/Prevent Auto Checklists",
       "next": "cr_cs",
       "resolvedNext": "cr_forvis",
-      "help": "For platform.m7_b.vehicle_health_monitor.brake_non_critical.active. The guide's command list describes !brakereset as the brake reset for platforms other than PBT, and !pbtreset as the one for Peterbilt trucks."
+      "help": "For platform.m7_b.vehicle_health_monitor.brake_non_critical.active."
     },
     "cr_pa_pbt": {
       "type": "action",
@@ -350,7 +350,7 @@
       "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Unable to Obtain Ready State/Prevent Auto Checklists",
       "next": "cr_cs",
       "resolvedNext": "cr_forvis",
-      "help": "For platform.m7_a.vehicle_health_monitor.propulsion_critical_preliminary_detection.active and platform.m7_a.vehicle_health_monitor.aci_detected_fault.aggregated_failure. The guide's command list describes !pbtreset as the platform-specific brake reset for Peterbilt trucks."
+      "help": "For platform.m7_a.vehicle_health_monitor.propulsion_critical_preliminary_detection.active and platform.m7_a.vehicle_health_monitor.aci_detected_fault.aggregated_failure."
     },
     "cr_pa_trans": {
       "type": "action",

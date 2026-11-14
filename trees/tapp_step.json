@@ -3,7 +3,7 @@
   "id": "tapp_step",
   "title": "Start here",
   "role": "category",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "status": "DRAFT",
   "sourceDocs": [
     "DTP TS tickets via Glean, Aug–Oct 2026"
@@ -52,10 +52,10 @@
       "text": "Launch",
       "tree": "launch"
     },
-    "ts_recovery": {
+    "ts_recovery": { "variants": [{"when": {"platform": "peterbilt"}, "help": "TApp errors carry an instruction (RETRY_STEP, RETRY_TASK, DO_NOT_RETRY) and a recovery action (RESET_PBT, REQUEST_SUPPORT, GET_TECHNICAL_SUPPORT). Follow what it says."}],
       "type": "question",
       "text": "What recovery action does the error show?",
-      "help": "TApp errors carry an instruction (RETRY_STEP, RETRY_TASK, DO_NOT_RETRY) and a recovery action (RESET_PBT, REQUEST_SUPPORT, GET_TECHNICAL_SUPPORT). Follow what it says.",
+      "help": "TApp errors carry an instruction (RETRY_STEP, RETRY_TASK, DO_NOT_RETRY) and a recovery action (REQUEST_SUPPORT, GET_TECHNICAL_SUPPORT). Follow what it says.",
       "source": "TS: DTP-111734, DTP-108736, DTP-110239",
       "options": [
         {

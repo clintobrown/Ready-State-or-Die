@@ -304,6 +304,11 @@
           },
           "description": "question or action only. Adds a button that opens this address in a new tab and copies the run's truck ID to the clipboard."
         },
+        "howto": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "question or action only. Detailed instructions shown when the operator taps 'Help me do this': exactly where to look and what a good or bad result looks like."
+        },
         "phrase": {
           "type": "string",
           "description": "escalation terminal only. The short line the operator copies into the thread. {issue} is replaced by the 'issue' of the last answer picked (or the text typed into an input node); if there is none it is dropped."

@@ -3,7 +3,7 @@
   "id": "power_hw",
   "title": "Power, compute, RSI or ABS light",
   "role": "category",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "status": "DRAFT",
   "sourceDocs": [
     "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), docs.google.com/document/d/1f33pt_ImWLqc8gB-IrQ8BNcO3kDr4RhnwY3p_rKIFaI",
@@ -22,27 +22,36 @@
           "next": "ph_led"
         },
         {
-          "label": "RSI display is blank", "issue": "RSI display blank",
+          "label": "RSI display is blank",
+          "issue": "RSI display blank",
           "short": "RSI blank",
           "next": "ph_rsi"
         },
         {
-          "label": "RSI is on but can't ping the car", "issue": "RSI can't ping the car",
+          "label": "RSI is on but can't ping the car",
+          "issue": "RSI can't ping the car",
           "short": "No ping",
           "next": "ph_ping"
         },
         {
-          "label": "Compute won't turn on in hot or cold weather", "issue": "compute won't turn on (temperature)",
+          "label": "Compute won't turn on in hot or cold weather",
+          "issue": "compute won't turn on (temperature)",
           "short": "Temperature",
           "next": "ph_temp"
         },
         {
-          "label": "RSI laptop lost the stack or can't reach websites", "issue": "RSI laptop lost the stack connection",
+          "label": "RSI laptop lost the stack or can't reach websites",
+          "issue": "RSI laptop lost the stack connection",
           "short": "RSI network",
-          "next": "ph_static"
+          "next": "ph_static",
+          "platforms": [
+            "volvo",
+            "international"
+          ]
         },
         {
-          "label": "ABS warning light is on", "issue": "ABS warning light on",
+          "label": "ABS warning light is on",
+          "issue": "ABS warning light on",
           "short": "ABS light",
           "next": "ph_abs"
         }
@@ -60,7 +69,36 @@
       "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Powering on Vehicle/Compute/RSI/NUC",
       "next": "ph_esc_led",
       "resolvedNext": "ph_forvis",
-      "help": "The ! commands come up when you send them to yourself as a Slack direct message."
+      "help": "The ! commands come up when you send them to yourself as a Slack direct message.",
+      "variants": [
+        {
+          "when": {
+            "platform": "peterbilt"
+          },
+          "steps": [
+            "Run the !coldstart steps.",
+            "Check whether the PWR A/B LEDs come on."
+          ]
+        },
+        {
+          "when": {
+            "platform": "volvo"
+          },
+          "steps": [
+            "Run the !volvocoldstart steps.",
+            "Check whether the PWR A/B LEDs come on."
+          ]
+        },
+        {
+          "when": {
+            "platform": "international"
+          },
+          "steps": [
+            "Run the !a2cs steps.",
+            "Check whether the PWR A/B LEDs come on."
+          ]
+        }
+      ]
     },
     "ph_rsi": {
       "type": "action",
@@ -99,7 +137,36 @@
       "source": "TS: generic cold-start step, same as the other trees (VO site practice, Oct 2026). Added so operator options run out before escalating; the Dev Ops guide itself goes to VRE at this point.",
       "next": "ph_esc",
       "resolvedNext": "ph_forvis",
-      "help": "The ! commands come up when you send them to yourself as a Slack direct message."
+      "help": "The ! commands come up when you send them to yourself as a Slack direct message.",
+      "variants": [
+        {
+          "when": {
+            "platform": "peterbilt"
+          },
+          "steps": [
+            "Run the !coldstart steps.",
+            "Check whether the problem has cleared."
+          ]
+        },
+        {
+          "when": {
+            "platform": "volvo"
+          },
+          "steps": [
+            "Run the !volvocoldstart steps.",
+            "Check whether the problem has cleared."
+          ]
+        },
+        {
+          "when": {
+            "platform": "international"
+          },
+          "steps": [
+            "Run the !a2cs steps.",
+            "Check whether the problem has cleared."
+          ]
+        }
+      ]
     },
     "ph_ping": {
       "type": "action",
@@ -172,13 +239,22 @@
       "text": "Back up without VRE. Post a /vreforvis with the steps you took, a sysreport if possible, and how long you spent troubleshooting.",
       "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Purpose"
     },
-    "ph_esc_led": { "phrase": "PWR A/B LEDs not lit, cold start did not fix it", "details": ["Photo: the PWR A/B LEDs."],
+    "ph_esc_led": {
+      "phrase": "PWR A/B LEDs not lit, cold start did not fix it",
+      "details": [
+        "Photo: the PWR A/B LEDs."
+      ],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "A cold start didn't bring the PWR A/B LEDs on. Make a ticket in #vops_troubleshooting, say a cold start did not fix it, and paste the handoff.",
       "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Powering on Vehicle/Compute/RSI/NUC"
     },
-    "ph_esc": { "phrase": "Power/RSI problem, {issue}", "details": ["Photo: what you're seeing (PWR A/B LEDs, RSI screen, or the dash light).", "Attach a sysreport if you can."],
+    "ph_esc": {
+      "phrase": "Power/RSI problem, {issue}",
+      "details": [
+        "Photo: what you're seeing (PWR A/B LEDs, RSI screen, or the dash light).",
+        "Attach a sysreport if you can."
+      ],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "Still not working. Escalate to VRE in a #vops_troubleshooting thread (Scout Troubleshooter, Aurora Mobile App, or /vrehelp) and paste the handoff.",

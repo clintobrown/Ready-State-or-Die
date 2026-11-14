@@ -3,7 +3,7 @@
   "id": "precheck",
   "title": "Pre-mission or pre-deploy check failed",
   "role": "category",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "status": "DRAFT",
   "sourceDocs": [
     "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), docs.google.com/document/d/1f33pt_ImWLqc8gB-IrQ8BNcO3kDr4RhnwY3p_rKIFaI"
@@ -16,22 +16,39 @@
       "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Pre-Mission/Pre-Deploy Checks Failures",
       "options": [
         {
-          "label": "Pings fail for sensors", "issue": "sensor pings",
+          "label": "Pings fail for sensors",
+          "issue": "sensor pings",
           "short": "Sensor pings",
           "next": "pc_cs"
         },
         {
-          "label": "Message suggests !pbtreset or !brakereset", "issue": "reset requested",
+          "label": "Message suggests !pbtreset",
+          "issue": "reset requested",
           "short": "Reset asked",
+          "platforms": [
+            "peterbilt"
+          ],
           "next": "pc_reset"
         },
         {
-          "label": "Timeout: uptime TCM or Credentialer", "issue": "uptime TCM / Credentialer timeout",
+          "label": "Message suggests !brakereset",
+          "issue": "reset requested",
+          "short": "Reset asked",
+          "platforms": [
+            "volvo",
+            "international"
+          ],
+          "next": "pc_reset"
+        },
+        {
+          "label": "Timeout: uptime TCM or Credentialer",
+          "issue": "uptime TCM / Credentialer timeout",
           "short": "Timeout",
           "next": "pc_wait"
         },
         {
-          "label": "Logging checklist: drives missing (pre-deploy)", "issue": "logging drives missing",
+          "label": "Logging checklist: drives missing (pre-deploy)",
+          "issue": "logging drives missing",
           "short": "Drives missing",
           "next": "pc_drives"
         },
@@ -53,13 +70,24 @@
       "short": "Reset done",
       "text": "Run the reset the message names",
       "steps": [
-        "Run the reset the failure message suggests: !pbtreset or !brakereset.",
+        "Run the !brakereset steps.",
         "Re-run the checks."
       ],
       "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Pre-Mission/Pre-Deploy Checks Failures",
       "next": "pc_cs",
       "resolvedNext": "pc_forvis",
-      "help": "The ! commands come up when you send them to yourself as a Slack direct message."
+      "help": "The ! commands come up when you send them to yourself as a Slack direct message.",
+      "variants": [
+        {
+          "when": {
+            "platform": "peterbilt"
+          },
+          "steps": [
+            "Run the !pbtreset steps.",
+            "Re-run the checks."
+          ]
+        }
+      ]
     },
     "pc_wait": {
       "type": "action",
@@ -122,15 +150,54 @@
       "source": "TS: generic cold-start step, same as the other trees (VO site practice, Oct 2026). Added so operator options run out before escalating; the Dev Ops guide itself goes to VRE at this point.",
       "next": "pc_esc",
       "resolvedNext": "pc_forvis",
-      "help": "The ! commands come up when you send them to yourself as a Slack direct message."
+      "help": "The ! commands come up when you send them to yourself as a Slack direct message.",
+      "variants": [
+        {
+          "when": {
+            "platform": "peterbilt"
+          },
+          "steps": [
+            "Run the !coldstart steps.",
+            "Re-run the checks."
+          ]
+        },
+        {
+          "when": {
+            "platform": "volvo"
+          },
+          "steps": [
+            "Run the !volvocoldstart steps.",
+            "Re-run the checks."
+          ]
+        },
+        {
+          "when": {
+            "platform": "international"
+          },
+          "steps": [
+            "Run the !a2cs steps.",
+            "Re-run the checks."
+          ]
+        }
+      ]
     },
-    "pc_esc_lw": { "phrase": "PCIE Link Width still failing after !linkwidth and a cold start", "details": ["Screenshot: the logger preflight failure.", "This one also goes to HW Diagnostics and FAST."],
+    "pc_esc_lw": {
+      "phrase": "PCIE Link Width still failing after !linkwidth and a cold start",
+      "details": [
+        "Screenshot: the logger preflight failure.",
+        "This one also goes to HW Diagnostics and FAST."
+      ],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "PCIE Link Width is still failing after !linkwidth and a cold start. Escalate to VRE, HW Diagnostics and FAST, and paste the handoff.",
       "source": "Dev Ops Troubleshooting Guide v2.2 (Oct 21, 2026), Pre-Mission/Pre-Deploy Checks Failures"
     },
-    "pc_esc": { "phrase": "Pre-mission/pre-deploy check failing, {issue}", "details": ["Screenshot: the failed check and its message.", "Attach a sysreport if you can."],
+    "pc_esc": {
+      "phrase": "Pre-mission/pre-deploy check failing, {issue}",
+      "details": [
+        "Screenshot: the failed check and its message.",
+        "Attach a sysreport if you can."
+      ],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "The check is still failing. Escalate to VRE in a #vops_troubleshooting thread (Scout Troubleshooter, Aurora Mobile App, or /vrehelp) and paste the handoff.",

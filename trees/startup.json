@@ -3,7 +3,7 @@
   "id": "startup",
   "title": "Start-up / cold start process",
   "role": "sequence",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "status": "DRAFT",
   "sourceDocs": [
     "Cold-start steps from calibration.json (VO site practice, Oct 2026)"
@@ -15,9 +15,9 @@
       "text": "Which start-up process?",
       "source": "TS: copied from calibration.json cold-start steps (VO site practice, Oct 2026)",
       "options": [
-        { "label": "Volvo", "short": "Volvo", "next": "su_volvo" },
-        { "label": "International", "short": "International", "next": "su_intl" },
-        { "label": "Peterbilt", "short": "Peterbilt", "next": "su_pbt" }
+        { "label": "Volvo", "short": "Volvo", "platforms": ["volvo"], "next": "su_volvo" },
+        { "label": "International", "short": "International", "platforms": ["international"], "next": "su_intl" },
+        { "label": "Peterbilt", "short": "Peterbilt", "platforms": ["peterbilt"], "next": "su_pbt" }
       ]
     },
     "su_volvo": {
