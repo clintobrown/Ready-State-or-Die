@@ -1,0 +1,57 @@
+{
+  "$schema": "./schema.json",
+  "id": "scout_cal",
+  "title": "Scout Calibration Procedure",
+  "role": "sequence",
+  "version": "0.1.0",
+  "status": "DRAFT",
+  "tools": [
+    "scout"
+  ],
+  "sourceDocs": [
+    "Standard Dev Ops Test Procedures (Nov 13, 2026), docs.google.com/document/d/1anysPSWY0So4dqryc11XfIrL2y4FVpOhLwcmDNiD2Qs",
+    "Drive-Thru Calibration Verification design doc",
+    "Drive-Thru Verification Data Collection (working document)"
+  ],
+  "start": "dtv_run",
+  "nodes": {
+    "dtv_run": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "DTV run",
+      "text": "Run Drive-Thru Verification in Scout",
+      "steps": [
+        "Pull software in Scout if the ticket needs it, and cold start if required.",
+        "In the expanded Mission panel, swap the stack mode to CALIBRATION. This starts a log.",
+        "Stage the truck at the start of the DTV corridor, lined up with the ground markings.",
+        "Make sure no other truck is collecting in the corridor.",
+        "In the Calibration panel, check it shows Ready.",
+        "Pick Drive Thru Verification in the procedure dropdown.",
+        "Press Start, wait about 5 seconds, then drive the corridor at about 5 to 10 mph.",
+        "Stop completely at the end, wait 5 seconds, and press Stop.",
+        "Wait for the result. PASS or FAIL comes back within about 5 minutes."
+      ],
+      "caution": "Manual driving only. The left seat operator stays in the truck for the whole run.",
+      "doneLabel": "Steps completed",
+      "verify": {
+        "text": "Did the verification pass?",
+        "yes": "Yes, it passed",
+        "no": "No, it failed"
+      },
+      "source": "Standard Dev Ops Test Procedures (Nov 13, 2026), Drive Thru Verification; Drive-Thru Calibration Verification design doc",
+      "next": "dtv_fail",
+      "resolvedNext": "dtv_pass"
+    },
+    "dtv_pass": {
+      "type": "terminal",
+      "terminal": "RESOLVED",
+      "text": "Drive-Thru Verification passed. Carry on with the mission.",
+      "source": "Standard Dev Ops Test Procedures (Nov 13, 2026), Drive Thru Verification; Drive-Thru Calibration Verification design doc"
+    },
+    "dtv_fail": {
+      "type": "route",
+      "text": "Calibration failure",
+      "tree": "calibration"
+    }
+  }
+}

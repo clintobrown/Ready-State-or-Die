@@ -1,0 +1,177 @@
+{
+  "$schema": "./schema.json",
+  "id": "other",
+  "title": "Something else",
+  "role": "category",
+  "version": "0.1.9",
+  "status": "DRAFT",
+  "sourceDocs": [
+    "DTP TS tickets via Glean, 2022–Oct 2026"
+  ],
+  "start": "ot_desc",
+  "nodes": {
+    "ot_desc": {
+      "type": "input",
+      "text": "In a few words, what's going on?",
+      "help": "Optional, but it goes straight into the VRE handoff.",
+      "placeholder": "e.g. TApp frozen on prelaunch checks",
+      "source": "ReadyPath",
+      "next": "ot_where"
+    },
+    "ot_where": {
+      "type": "question",
+      "text": "Where is the truck?",
+      "source": "TS: DTP-112417",
+      "options": [
+        {
+          "label": "Terminal or launch pad",
+          "short": "Terminal",
+          "next": "ot_msg"
+        },
+        {
+          "label": "On the road",
+          "short": "On road",
+          "next": "ot_safe"
+        }
+      ]
+    },
+    "ot_safe": {
+      "type": "question",
+      "text": "Park somewhere safe before troubleshooting.",
+      "help": "Don't troubleshoot while driving. Park per SOP first.",
+      "source": "TS: DTP-112417",
+      "options": [
+        {
+          "label": "I'm parked somewhere safe",
+          "short": "Parked safe",
+          "next": "ot_msg"
+        }
+      ]
+    },
+    "ot_msg": { "variants": [{"when": {"platform": "peterbilt"}, "help": "Errors and checklists often say what to do: retry, cold start, reset PBT, or get support. Follow what it says."}],
+      "type": "question",
+      "text": "Does the tool show an error with a recovery action?",
+      "help": "Errors and checklists often say what to do: retry, cold start, or get support. Follow what it says.",
+      "source": "TS: DTP-111734, DTP-110498, DTP-110890",
+      "options": [
+        {
+          "label": "Retry the step or task",
+          "short": "Says retry",
+          "next": "ot_retry"
+        },
+        {
+          "label": "Reset PBT",
+          "short": "Says PBT",
+          "platforms": ["peterbilt"],
+          "next": "ot_pbt"
+        },
+        {
+          "label": "Cold start the system",
+          "short": "Says CS",
+          "next": "ot_cs"
+        },
+        {
+          "label": "Get technical support / request support",
+          "short": "Says support",
+          "next": "ot_esc"
+        },
+        {
+          "label": "No error, or nothing useful",
+          "short": "No error",
+          "next": "ot_tool"
+        }
+      ]
+    },
+    "ot_tool": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Reload + ticket",
+      "text": "Reload the app and check the VO ticket",
+      "steps": [
+        "Reload Scout or TApp and see if the problem is still there.",
+        "Open the [VO ticket](https://jira.int.aurora.tech/) and confirm the Shipyard release, Atlas view, and goal list look right.",
+        "If the ticket is wrong, dispatch has to fix it. Note what you found."
+      ],
+      "help": "Reloading the tool and VO ticket setup errors were behind a lot of tickets that didn't fit a category.",
+      "source": "TS: DTP-28931, DTP-105554, DTP-105627, DTP-112429",
+      "next": "ot_cs"
+    },
+    "ot_retry": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Retried",
+      "text": "Retry once",
+      "steps": [
+        "Retry the step or task the error points to, once."
+      ],
+      "source": "TS: DTP-108736",
+      "next": "ot_cs"
+    },
+    "ot_pbt": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "PBT reset",
+      "text": "Do the PBT reset, then retry",
+      "steps": [
+        "Perform the PBT reset per [SOP](https://sites.google.com/aurora.tech/procedures/home-v2).",
+        "Retry the blocked step."
+      ],
+      "help": "If it still won't proceed, the task usually needs a reset from a VRE.",
+      "source": "TS: DTP-111734, DTP-108520",
+      "next": "ot_esc"
+    },
+    "ot_cs": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "CS + retry",
+      "text": "Cold start and retry",
+      "help": "When nothing else points the way, a cold start was the most common first fix in past TS tickets.",
+      "steps": [
+        "TODO: platform cold-start sequence from SOP.",
+        "Wait for the truck to reconnect to the tool before doing anything else.",
+        "Retry whatever was blocked."
+      ],
+      "variants": [
+        {
+          "when": {
+            "platform": "volvo"
+          },
+          "steps": [
+            "Apply parking brake.", "Note: You no longer need to be in the idle stack to cold start. You only need to be in idle when removing logging disks.", "Press and hold the Compute Power Button for 5 seconds. PWR indicators blink red.", "Wait for both PWR indicators to slow-blink green.", "Press and hold the Engine Start Button to turn off the vehicle.", "Turn the primary battery bank switch OFF.", "Turn the redundant (secondary) battery bank switch OFF.", "Ensure both TMS LEDs are off. If on, cycle the battery switches again.", "Wait a minimum of 3 minutes.", "Ensure the DBW Disconnect is in the up/released position.", "Turn the redundant (secondary) battery bank switch ON.", "Connect shore power if needed.", "Turn the primary battery bank switch ON.", "Shore power only: press Engine Start twice. Vehicle power: hold the Engine Start Button.", "Ensure both TMS LEDs show amber or green.", "Press the drive height recall button.", "Press the Compute Power Button for 1 second. It fast-blinks green, then goes steady.", "If it takes more than 10 minutes to boot, consult VRE.", "Swap to AV stack via TAPP or Scout.",
+            "Wait for the truck to reconnect to the tool before doing anything else.",
+            "Retry whatever was blocked."
+          ]
+        },
+        {
+          "when": {
+            "platform": "international"
+          },
+          "steps": [
+            "Perform System Shut Down.", "Apply parking brake and place transmission in Neutral.", "Note: You no longer need to be in the idle stack to cold start. You only need to be in idle when removing logging disks.", "Turn ignition key OFF. The LED stays solid green for about 150 seconds, flashes red for about 10 seconds, then turns off.", "Wait a minimum of 3 minutes after the LED is off.", "Perform System Start Up.", "Ensure the DBW Cutoff Switch is in the up/released position.", "Engine power: start the engine and keep the ignition key in ON.", "Shore power: confirm the shore power switch is off, connect shore power to the vehicle DC receptacle, turn the shore power switch on, then turn the ignition key to ON.", "Ensure the Compute Power Button is flashing once per second (system ready to boot).", "Press and release the Compute Power Button. The LED fast-blinks green, then burns steadily.", "Swap to AV stack via TAPP or Scout.",
+            "Wait for the truck to reconnect to the tool before doing anything else.",
+            "Retry whatever was blocked."
+          ]
+        },
+        {
+          "when": {
+            "platform": "peterbilt"
+          },
+          "steps": [
+            "Perform System Shut Down.", "Apply parking brake and place transmission in Neutral.", "Note: You no longer need to be in the idle stack to cold start. You only need to be in idle when removing logging disks.", "Turn ignition key OFF.", "If on shore power: turn the shore power unit switch OFF and disconnect shore power from the vehicle.", "Wait a minimum of 2 minutes.", "Perform System Start Up.", "Press the DBW Disconnect switch.", "Start the engine. If on shore power: plug in shore power and turn the key to ON for 5 seconds.", "Immediately release the DBW Disconnect button and ensure it is in the up/released position.", "Wait for both PWR indicators on the LSI to slow-blink green.", "Press the Compute Power Button for 1 second. PWR indicators fast-blink green, then burn steadily.", "If the system takes more than 10 minutes to boot, consult VRE.", "FG2.1 only: perform the TBS check.", "Swap to AV stack via TAPP or Scout.",
+            "Wait for the truck to reconnect to the tool before doing anything else.",
+            "Retry whatever was blocked."
+          ]
+        }
+      ],
+      "source": "TS: DTP-112093, DTP-112431, DTP-111299 · VO site practice (Oct 2026)",
+      "next": "ot_esc"
+    },
+    "ot_esc": { "phrase": "{issue}", "details": ["Screenshot: whatever the tool is showing."],
+      "type": "terminal",
+      "terminal": "ESCALATE_VRE",
+      "text": "Operator-level steps are used up. Open a TS ticket, paste the handoff, and describe what you see in the note.",
+      "handoffNote": "Uncategorized issue: see the operator's description (\"what's going on\") and the note. If this comes up again, it may need its own category.",
+      "source": "ReadyPath"
+    }
+  }
+}

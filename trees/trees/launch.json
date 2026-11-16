@@ -1,0 +1,295 @@
+{
+  "$schema": "./schema.json",
+  "id": "launch",
+  "title": "Launch issue",
+  "role": "category",
+  "version": "0.4.9",
+  "status": "DRAFT",
+  "sourceDocs": [
+    "DTP TS tickets via Glean, Jun–Oct 2026"
+  ],
+  "start": "ln_err",
+  "nodes": {
+    "ln_err": {
+      "type": "question",
+      "text": "What does the launch step show?",
+      "source": "TS: DTP-111734, DTP-100634, DTP-111048, DTP-110239, DTP-108736, DTP-104301",
+      "options": [
+        {
+          "label": "PBT reset required", "issue": "PBT reset required",
+          "short": "PBT",
+          "platforms": ["peterbilt"],
+          "next": "ln_pbt"
+        },
+        {
+          "label": "Engage not confirmed, or launch timed out", "issue": "engage not confirmed or launch timed out",
+          "short": "Timed out",
+          "next": "ln_eng_check"
+        },
+        {
+          "label": "Authorization is stale", "issue": "authorization is stale",
+          "short": "Stale auth",
+          "next": "ln_esc_reset"
+        },
+        {
+          "label": "Software deployment in progress", "issue": "software deployment in progress",
+          "short": "Deploy ongoing",
+          "next": "ln_deploy"
+        },
+        {
+          "label": "Software not of release / permission check", "issue": "software not of release",
+          "short": "Wrong SW",
+          "next": "ln_ticket"
+        },
+        {
+          "label": "Something else",
+          "short": "Other",
+          "next": "ln_cs"
+        }
+      ]
+    },
+    "ln_pbt": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "PBT reset",
+      "text": "Do the PBT reset, then retry launch",
+      "steps": [
+        "Perform the PBT reset per [SOP](https://sites.google.com/aurora.tech/procedures/home-v2).",
+        "Retry the launch step."
+      ],
+      "source": "TS: DTP-111734, DTP-108520, DTP-105658",
+      "next": "ln_esc_reset",
+      "help": "If launch still won't proceed after the PBT reset, the launch task needs a reset from a VRE."
+    },
+    "ln_deploy": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Pull checked",
+      "text": "Confirm the software pull actually finished",
+      "steps": [
+        "Check the software pull status in your tool.",
+        "If it finished, the launch task still thinks a deploy is running. That needs a VRE."
+      ],
+      "source": "TS: DTP-110239",
+      "next": "ln_esc"
+    },
+    "ln_ticket": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Ticket check",
+      "text": "Check the software on the VO ticket",
+      "steps": [
+        "Confirm the [VO ticket](https://jira.int.aurora.tech/)'s Shipyard release matches the software you pulled.",
+        "If it doesn't, dispatch or the ticket owner has to fix it."
+      ],
+      "source": "TS: DTP-108736",
+      "next": "ln_esc"
+    },
+    "ln_cs": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "CS + retry",
+      "text": "Cold start and retry launch",
+      "steps": [
+        "TODO: platform cold-start sequence from SOP.",
+        "Wait for the truck to reconnect to the tool before doing anything else.",
+        "Step back through TApp and retry the launch."
+      ],
+      "source": "TS: DTP-104301 · VO site practice (Oct 2026)",
+      "next": "ln_esc",
+      "variants": [
+        {
+          "when": {
+            "platform": "volvo"
+          },
+          "steps": [
+            "Apply parking brake.", "Note: You no longer need to be in the idle stack to cold start. You only need to be in idle when removing logging disks.", "Press and hold the Compute Power Button for 5 seconds. PWR indicators blink red.", "Wait for both PWR indicators to slow-blink green.", "Press and hold the Engine Start Button to turn off the vehicle.", "Turn the primary battery bank switch OFF.", "Turn the redundant (secondary) battery bank switch OFF.", "Ensure both TMS LEDs are off. If on, cycle the battery switches again.", "Wait a minimum of 3 minutes.", "Ensure the DBW Disconnect is in the up/released position.", "Turn the redundant (secondary) battery bank switch ON.", "Connect shore power if needed.", "Turn the primary battery bank switch ON.", "Shore power only: press Engine Start twice. Vehicle power: hold the Engine Start Button.", "Ensure both TMS LEDs show amber or green.", "Press the drive height recall button.", "Press the Compute Power Button for 1 second. It fast-blinks green, then goes steady.", "If it takes more than 10 minutes to boot, consult VRE.", "Swap to AV stack via TAPP or Scout.",
+            "Wait for the truck to reconnect to the tool before doing anything else."
+          ]
+        },
+        {
+          "when": {
+            "platform": "international"
+          },
+          "steps": [
+            "Perform System Shut Down.", "Apply parking brake and place transmission in Neutral.", "Note: You no longer need to be in the idle stack to cold start. You only need to be in idle when removing logging disks.", "Turn ignition key OFF. The LED stays solid green for about 150 seconds, flashes red for about 10 seconds, then turns off.", "Wait a minimum of 3 minutes after the LED is off.", "Perform System Start Up.", "Ensure the DBW Cutoff Switch is in the up/released position.", "Engine power: start the engine and keep the ignition key in ON.", "Shore power: confirm the shore power switch is off, connect shore power to the vehicle DC receptacle, turn the shore power switch on, then turn the ignition key to ON.", "Ensure the Compute Power Button is flashing once per second (system ready to boot).", "Press and release the Compute Power Button. The LED fast-blinks green, then burns steadily.", "Swap to AV stack via TAPP or Scout.",
+            "Wait for the truck to reconnect to the tool before doing anything else."
+          ]
+        },
+        {
+          "when": {
+            "platform": "peterbilt"
+          },
+          "steps": [
+            "Perform System Shut Down.", "Apply parking brake and place transmission in Neutral.", "Note: You no longer need to be in the idle stack to cold start. You only need to be in idle when removing logging disks.", "Turn ignition key OFF.", "If on shore power: turn the shore power unit switch OFF and disconnect shore power from the vehicle.", "Wait a minimum of 2 minutes.", "Perform System Start Up.", "Press the DBW Disconnect switch.", "Start the engine. If on shore power: plug in shore power and turn the key to ON for 5 seconds.", "Immediately release the DBW Disconnect button and ensure it is in the up/released position.", "Wait for both PWR indicators on the LSI to slow-blink green.", "Press the Compute Power Button for 1 second. PWR indicators fast-blink green, then burn steadily.", "If the system takes more than 10 minutes to boot, consult VRE.", "FG2.1 only: perform the TBS check.", "Swap to AV stack via TAPP or Scout.",
+            "Wait for the truck to reconnect to the tool before doing anything else."
+          ]
+        }
+      ],
+      "caution": "Follow SOP for any vehicle state change before launch.",
+      "help": "A vehicle command error on launch cleared with stack to IDLE, cold start, and retry (DTP-104301)."
+    },
+    "ln_esc_reset": { "phrase": "Launch task needs a reset, {issue}", "details": ["Screenshot: the launch step error."],
+      "type": "terminal",
+      "terminal": "ESCALATE_VRE",
+      "text": "The launch task needs a reset, which only a VRE can do. Open a TS ticket and paste the handoff.",
+      "source": "ReadyPath",
+      "handoffNote": "Likely request: reset the LAUNCH_VEHICLE task. Past causes: engage not confirmed in time after arming (DTP-100634), authorization nonce about 30 min old (DTP-111048). Operator will engage promptly after the reset."
+    },
+    "ln_esc": { "phrase": "Launch failing, {issue}", "details": ["Screenshot: the launch step error."],
+      "type": "terminal",
+      "terminal": "ESCALATE_VRE",
+      "text": "Operator-level launch steps are used up. Open a TS ticket and paste the handoff.",
+      "source": "ReadyPath"
+    },
+    "ln_eng_check": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Doors/brake/drives",
+      "text": "Check doors, parking brake, and logging drives",
+      "steps": [
+        "Open and close both doors, then check the door-open light on the dash is off.",
+        "Go back through the launch steps for the parking brake and standby button. A \"park brake not ready\" fault showed up in two of these tickets.",
+        "Check the logging drives are the right ones for this truck. Wrong drives blocked a launch with almost no visible error.",
+        "Confirm the tool still shows ready and no checklists have come back."
+      ],
+      "variants": [
+        {
+          "when": {
+            "platform": "international"
+          },
+          "steps": [
+            "Open and close both doors, then check the door-open light on the dash is off. The door can read open while it's shut, so cycle both doors even if they look closed.",
+            "Go back through the launch steps for the parking brake and standby button. A \"park brake not ready\" fault showed up in two of these tickets.",
+            "Check the logging drives are the right ones for this truck. Wrong drives blocked a launch with almost no visible error.",
+            "Confirm the tool still shows ready and no checklists have come back."
+          ]
+        }
+      ],
+      "source": "TS: DTP-114195, DTP-98068, DTP-114373, DTP-114407",
+      "next": "ln_eng_retry"
+    },
+    "ln_eng_retry": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Retry + press",
+      "text": "Retry in TApp and press engage again",
+      "steps": [
+        "Tap Retry in TApp to re-arm the launch.",
+        "Slide to launch, then press the steering-wheel engage button within 60 seconds.",
+        "Press it firmly and hold for about a second. A very short press may not register.",
+        "If nothing happens, let TApp time out before pressing standby to try again. A standby press drops the truck to manual."
+      ],
+      "source": "TS: DTP-113311, DTP-114429",
+      "next": "ln_eng_cs"
+    },
+    "ln_eng_cs": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Sysreport + CS",
+      "text": "Collect a sysreport, then cold start",
+      "steps": [
+        "Note the time you pressed engage.",
+        "Generate a sysreport before you power down.",
+        "Cold start, using your platform's steps.",
+        "Step back through TApp and launch again."
+      ],
+      "variants": [
+        {
+          "when": {
+            "platform": "volvo"
+          },
+          "steps": [
+            "Note the time you pressed engage.",
+            "Generate a sysreport before you power down.",
+            "Apply parking brake.",
+            "Note: You no longer need to be in the idle stack to cold start. You only need to be in idle when removing logging disks.",
+            "Press and hold the Compute Power Button for 5 seconds. PWR indicators blink red.",
+            "Wait for both PWR indicators to slow-blink green.",
+            "Press and hold the Engine Start Button to turn off the vehicle.",
+            "Turn the primary battery bank switch OFF.",
+            "Turn the redundant (secondary) battery bank switch OFF.",
+            "Ensure both TMS LEDs are off. If on, cycle the battery switches again.",
+            "Wait a minimum of 3 minutes.",
+            "Ensure the DBW Disconnect is in the up/released position.",
+            "Turn the redundant (secondary) battery bank switch ON.",
+            "Connect shore power if needed.",
+            "Turn the primary battery bank switch ON.",
+            "Shore power only: press Engine Start twice. Vehicle power: hold the Engine Start Button.",
+            "Ensure both TMS LEDs show amber or green.",
+            "Press the drive height recall button.",
+            "Press the Compute Power Button for 1 second. It fast-blinks green, then goes steady.",
+            "If it takes more than 10 minutes to boot, consult VRE.",
+            "Swap to AV stack via TAPP or Scout.",
+            "Wait for the truck to reconnect to the tool before doing anything else.",
+            "Step back through TApp and launch again."
+          ]
+        },
+        {
+          "when": {
+            "platform": "international"
+          },
+          "steps": [
+            "Note the time you pressed engage.",
+            "Generate a sysreport before you power down.",
+            "Perform System Shut Down.",
+            "Apply parking brake and place transmission in Neutral.",
+            "Note: You no longer need to be in the idle stack to cold start. You only need to be in idle when removing logging disks.",
+            "Turn ignition key OFF. The LED stays solid green for about 150 seconds, flashes red for about 10 seconds, then turns off.",
+            "Wait a minimum of 3 minutes after the LED is off.",
+            "Perform System Start Up.",
+            "Ensure the DBW Cutoff Switch is in the up/released position.",
+            "Engine power: start the engine and keep the ignition key in ON.",
+            "Shore power: confirm the shore power switch is off, connect shore power to the vehicle DC receptacle, turn the shore power switch on, then turn the ignition key to ON.",
+            "Ensure the Compute Power Button is flashing once per second (system ready to boot).",
+            "Press and release the Compute Power Button. The LED fast-blinks green, then burns steadily.",
+            "Swap to AV stack via TAPP or Scout.",
+            "Wait for the truck to reconnect to the tool before doing anything else.",
+            "Step back through TApp and launch again."
+          ]
+        },
+        {
+          "when": {
+            "platform": "peterbilt"
+          },
+          "steps": [
+            "Note the time you pressed engage.",
+            "Generate a sysreport before you power down.",
+            "Perform System Shut Down.",
+            "Apply parking brake and place transmission in Neutral.",
+            "Note: You no longer need to be in the idle stack to cold start. You only need to be in idle when removing logging disks.",
+            "Turn ignition key OFF.",
+            "If on shore power: turn the shore power unit switch OFF and disconnect shore power from the vehicle.",
+            "Wait a minimum of 2 minutes.",
+            "Perform System Start Up.",
+            "Press the DBW Disconnect switch.",
+            "Start the engine. If on shore power: plug in shore power and turn the key to ON for 5 seconds.",
+            "Immediately release the DBW Disconnect button and ensure it is in the up/released position.",
+            "Wait for both PWR indicators on the LSI to slow-blink green.",
+            "Press the Compute Power Button for 1 second. PWR indicators fast-blink green, then burn steadily.",
+            "If the system takes more than 10 minutes to boot, consult VRE.",
+            "FG2.1 only: perform the TBS check.",
+            "Swap to AV stack via TAPP or Scout.",
+            "Wait for the truck to reconnect to the tool before doing anything else.",
+            "Step back through TApp and launch again."
+          ]
+        }
+      ],
+      "source": "TS: DTP-114429, DTP-114407 · VO site practice (Nov 2026)",
+      "next": "ln_esc_eng"
+    },
+    "ln_esc_eng": {
+      "type": "terminal",
+      "terminal": "ESCALATE_VRE",
+      "phrase": "Ready state, engage press does nothing, launch timed out. Related: DTP-113311, DTP-114429.",
+      "details": [
+        "Say whether you heard a rejection chime.",
+        "Give the time of the engage press.",
+        "Attach the sysreport.",
+        "If TApp still shows the failed launch step, ask for a task reset."
+      ],
+      "text": "Engage still does nothing after a retry and a cold start. Escalate to VRE and paste the handoff.",
+      "source": "TS: DTP-113311, DTP-114429"
+    }
+  }
+}
