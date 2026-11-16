@@ -1,0 +1,639 @@
+{
+  "$schema": "./schema.json",
+  "id": "scout_launch",
+  "title": "Launch a dev mission",
+  "role": "sequence",
+  "version": "0.1.0",
+  "status": "DRAFT",
+  "tools": [
+    "scout"
+  ],
+  "sourceDocs": [
+    "Standard Dev Ops Test Procedures (Nov 13, 2026)",
+    "Terminals SOP 500-009358-01 (rev Oct 13, 2026)",
+    "Existing READY STATE or DIE trees (sw_pull, precheck, mobile_app, scout_issue, scout_goal, scout_cal)"
+  ],
+  "start": "sl_p0",
+  "nodes": {
+    "sl_p0": {
+      "type": "question",
+      "phase": "Phase 0 · VO ticket",
+      "text": "Open your dispatched VO ticket",
+      "help": "Check the truck on the ticket, read the test procedure, and note the software tag and stack mode it calls for.",
+      "done_when": "The ticket's truck matches this truck and the test procedure is clear enough to run.",
+      "tapp_changed": false,
+      "source": "Standard Dev Ops Test Procedures (Nov 13, 2026), Purpose (a test procedure must be on the ticket before dispatch)",
+      "options": [
+        {
+          "label": "Ticket matches, procedure clear",
+          "short": "Ticket ✓",
+          "type": "success",
+          "next": "sl_p1"
+        },
+        {
+          "label": "Truck on ticket doesn't match",
+          "short": "Wrong truck",
+          "type": "fail",
+          "next": "sl_esc_disp_truck"
+        },
+        {
+          "label": "Procedure missing or unclear",
+          "short": "No procedure",
+          "type": "fail",
+          "next": "sl_esc_disp_proc"
+        },
+        {
+          "label": "T/S Something Else",
+          "short": "T/S",
+          "type": "ts",
+          "next": "sl_ts_p0"
+        }
+      ]
+    },
+    "sl_esc_disp_truck": {
+      "type": "terminal",
+      "terminal": "ESCALATE_DISPATCH",
+      "text": "The VO ticket is assigned to a different truck. Dispatch fixes the assignment.",
+      "source": "Standard Dev Ops Test Procedures (Nov 13, 2026)"
+    },
+    "sl_esc_disp_proc": {
+      "type": "terminal",
+      "terminal": "ESCALATE_DISPATCH",
+      "text": "The ticket has no test procedure, or it can't be run as written. Dispatch gets it fixed with the requestor before you start.",
+      "source": "Standard Dev Ops Test Procedures (Nov 13, 2026), Purpose and Complex Requests",
+      "handoffNote": "Per the SOP, a test procedure must be on the ticket before it's dispatched. Complex requests go to #ask-dev-test-ops."
+    },
+    "sl_p1": {
+      "type": "question",
+      "phase": "Phase 1 · Environment",
+      "text": "Confirm the truck is in the correct environment",
+      "help": "In Slack, send yourself a DM with /checkenv. Dev missions use Pre-production, or Staging if the ticket says so. If the environment gets changed, cold start afterward.",
+      "done_when": "/checkenv confirms the truck is in the correct environment.",
+      "tapp_changed": false,
+      "source": "VO process update (Nov 4, 2026): /checkenv",
+      "options": [
+        {
+          "label": "Yes, correct environment",
+          "short": "Env ✓",
+          "type": "success",
+          "next": "sl_p2"
+        },
+        {
+          "label": "No, wrong environment",
+          "short": "Wrong env",
+          "type": "fail",
+          "next": "sl_esc_env"
+        },
+        {
+          "label": "T/S Something Else",
+          "short": "T/S",
+          "type": "ts",
+          "next": "sl_ts_p1"
+        }
+      ]
+    },
+    "sl_esc_env": {
+      "phrase": "Truck is in the wrong cloud environment, needs moving to the correct one",
+      "details": [
+        "Screenshot: the /checkenv result showing the current environment."
+      ],
+      "type": "terminal",
+      "terminal": "ESCALATE_VRE",
+      "text": "Stop. The truck is in the wrong environment. Open a VRE thread and paste the summary below.",
+      "source": "VO process update (Nov 4, 2026): /checkenv",
+      "handoffNote": "Request: put this vehicle in the correct cloud environment. Once it's in the correct environment, the VO will perform a Cold Start. Reply in thread when done."
+    },
+    "sl_p2": {
+      "type": "question",
+      "phase": "Phase 2 · Power and network",
+      "text": "Connect shore ethernet and bring computes up",
+      "help": "Connect shore ethernet. Turn on the computes and boot the Aurora Driver.",
+      "done_when": "Scout shows the truck connected, and it's on the Office Network.",
+      "tapp_changed": false,
+      "source": "Standard Dev Ops Test Procedures (Nov 13, 2026), Standard Dev Test Procedure; Terminals SOP 500-009358-01 (rev Oct 13, 2026), Truck prep 5.1–5.2",
+      "options": [
+        {
+          "label": "Connected in Scout",
+          "short": "Computes ✓",
+          "type": "success",
+          "next": "sl_p3"
+        },
+        {
+          "label": "Scout shows truck disconnected",
+          "short": "Disconnected",
+          "type": "fail",
+          "next": "sl_c1"
+        },
+        {
+          "label": "Logging disk light is off",
+          "short": "Disk light",
+          "type": "fail",
+          "next": "sl_disk1"
+        },
+        {
+          "label": "Not on the Office Network",
+          "short": "Network",
+          "type": "fail",
+          "next": "sl_esc_net"
+        },
+        {
+          "label": "T/S Something Else",
+          "short": "T/S",
+          "type": "ts",
+          "next": "sl_ts_p2"
+        }
+      ]
+    },
+    "sl_c1": {
+      "variants": [
+        {
+          "when": {
+            "platform": "peterbilt"
+          },
+          "steps": [
+            "Check every power cutoff switch is in the run position.",
+            "Check pECU (and rECU, if present) are on.",
+            "Wait for Scout to reconnect."
+          ]
+        }
+      ],
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Cutoff switches",
+      "text": "Check the power cutoff switches",
+      "steps": [
+        "Check every power cutoff switch is in the run position.",
+        "Wait for Scout to reconnect."
+      ],
+      "source": "Terminals SOP 500-009358-01 (rev Oct 13, 2026), Truck prep 5.2 (check power cutoff switches before escalating to VRE)",
+      "next": "sl_c2",
+      "resolvedNext": "sl_p2"
+    },
+    "sl_c2": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Cold start",
+      "text": "Cold start once, then recheck Scout",
+      "steps": [
+        "TODO: platform cold-start sequence from SOP.",
+        "Wait for the truck to reconnect to the tool before doing anything else."
+      ],
+      "source": "TS: DTP-104301 · launch.json ln_cs platform sequences · VO site practice (Oct 2026)",
+      "next": "sl_esc_conn",
+      "resolvedNext": "sl_p2",
+      "help": "Do one cold start only. In DTP-113007 and DTP-112133, repeated cold starts didn't help because the truck was in the wrong environment.",
+      "variants": [
+        {
+          "when": {
+            "platform": "volvo"
+          },
+          "steps": [
+            "Apply parking brake.",
+            "Note: You no longer need to be in the idle stack to cold start. You only need to be in idle when removing logging disks.",
+            "Press and hold the Compute Power Button for 5 seconds. PWR indicators blink red.",
+            "Wait for both PWR indicators to slow-blink green.",
+            "Press and hold the Engine Start Button to turn off the vehicle.",
+            "Turn the primary battery bank switch OFF.",
+            "Turn the redundant (secondary) battery bank switch OFF.",
+            "Ensure both TMS LEDs are off. If on, cycle the battery switches again.",
+            "Wait a minimum of 3 minutes.",
+            "Ensure the DBW Disconnect is in the up/released position.",
+            "Turn the redundant (secondary) battery bank switch ON.",
+            "Connect shore power if needed.",
+            "Turn the primary battery bank switch ON.",
+            "Shore power only: press Engine Start twice. Vehicle power: hold the Engine Start Button.",
+            "Ensure both TMS LEDs show amber or green.",
+            "Press the drive height recall button.",
+            "Press the Compute Power Button for 1 second. It fast-blinks green, then goes steady.",
+            "If it takes more than 10 minutes to boot, consult VRE.",
+            "Swap to AV stack via TAPP or Scout.",
+            "Wait for the truck to reconnect to the tool before doing anything else."
+          ]
+        },
+        {
+          "when": {
+            "platform": "international"
+          },
+          "steps": [
+            "Perform System Shut Down.",
+            "Apply parking brake and place transmission in Neutral.",
+            "Note: You no longer need to be in the idle stack to cold start. You only need to be in idle when removing logging disks.",
+            "Turn ignition key OFF. The LED stays solid green for about 150 seconds, flashes red for about 10 seconds, then turns off.",
+            "Wait a minimum of 3 minutes after the LED is off.",
+            "Perform System Start Up.",
+            "Ensure the DBW Cutoff Switch is in the up/released position.",
+            "Engine power: start the engine and keep the ignition key in ON.",
+            "Shore power: confirm the shore power switch is off, connect shore power to the vehicle DC receptacle, turn the shore power switch on, then turn the ignition key to ON.",
+            "Ensure the Compute Power Button is flashing once per second (system ready to boot).",
+            "Press and release the Compute Power Button. The LED fast-blinks green, then burns steadily.",
+            "Swap to AV stack via TAPP or Scout.",
+            "Wait for the truck to reconnect to the tool before doing anything else."
+          ]
+        },
+        {
+          "when": {
+            "platform": "peterbilt"
+          },
+          "steps": [
+            "Perform System Shut Down.",
+            "Apply parking brake and place transmission in Neutral.",
+            "Note: You no longer need to be in the idle stack to cold start. You only need to be in idle when removing logging disks.",
+            "Turn ignition key OFF.",
+            "If on shore power: turn the shore power unit switch OFF and disconnect shore power from the vehicle.",
+            "Wait a minimum of 2 minutes.",
+            "Perform System Start Up.",
+            "Press the DBW Disconnect switch.",
+            "Start the engine. If on shore power: plug in shore power and turn the key to ON for 5 seconds.",
+            "Immediately release the DBW Disconnect button and ensure it is in the up/released position.",
+            "Wait for both PWR indicators on the LSI to slow-blink green.",
+            "Press the Compute Power Button for 1 second. PWR indicators fast-blink green, then burn steadily.",
+            "If the system takes more than 10 minutes to boot, consult VRE.",
+            "FG2.1 only: perform the TBS check.",
+            "Swap to AV stack via TAPP or Scout.",
+            "Wait for the truck to reconnect to the tool before doing anything else."
+          ]
+        }
+      ]
+    },
+    "sl_disk1": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Reseat disks",
+      "text": "Reseat both logging disks and power cycle",
+      "steps": [
+        "Only swap or reseat disks in the idle stack.",
+        "Reseat both logging disks.",
+        "Power cycle the computes and check both disk lights."
+      ],
+      "source": "Terminals SOP 500-009358-01 (rev Oct 13, 2026), Launching 3.1; Truck prep 5.2",
+      "next": "sl_disk2",
+      "resolvedNext": "sl_p2"
+    },
+    "sl_disk2": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Reseat again",
+      "text": "Reseat the disks one more time",
+      "steps": [
+        "Reseat both logging disks again.",
+        "Check both disk lights."
+      ],
+      "source": "Terminals SOP 500-009358-01 (rev Oct 13, 2026), Truck prep 5.2 (if still not lit, reseat again and escalate to VRE)",
+      "next": "sl_esc_disk",
+      "resolvedNext": "sl_p2"
+    },
+    "sl_esc_conn": {
+      "phrase": "Truck won't connect in TApp after the switch check and a cold start",
+      "details": [
+        "Screenshot: TApp showing the truck disconnected."
+      ],
+      "type": "terminal",
+      "terminal": "ESCALATE_VRE",
+      "text": "Truck won't connect after the switch check and one cold start.",
+      "source": "TS: DTP-113007, DTP-112133, DTP-106475",
+      "handoffNote": "Check the vehicle's cloud environment first. In three recent tickets, 'not connecting' turned out to be the wrong environment, and a cold start fixed it after VRE changed it."
+    },
+    "sl_esc_disk": {
+      "phrase": "Logging disk light still off after two reseats",
+      "details": [
+        "Photo: the logging disk lights. Say which one is dark."
+      ],
+      "type": "terminal",
+      "terminal": "ESCALATE_VRE",
+      "text": "Logging disk light still off after two reseats.",
+      "source": "Terminals SOP 500-009358-01 (rev Oct 13, 2026), Truck prep 5.2"
+    },
+    "sl_esc_net": {
+      "type": "terminal",
+      "terminal": "ESCALATE_TS",
+      "text": "The truck isn't on the Office Network with shore ethernet connected.",
+      "source": "Standard Dev Ops Test Procedures (Nov 13, 2026), Standard Dev Test Procedure",
+      "handoffNote": "Tag the requestor from the VO ticket in this thread."
+    },
+    "sl_p3": {
+      "type": "question",
+      "phase": "Phase 3 · Software",
+      "text": "Put the ticket's software on the truck",
+      "help": "If the ticket needs a deploy, pull it in Scout. If remote deploy is on, wait for Dispatch to assign the tag, then start the deploy in the Aurora Mobile App. Cold start afterward.",
+      "done_when": "Scout shows the software the ticket calls for, and the truck is back up after the cold start.",
+      "tapp_changed": false,
+      "source": "Standard Dev Ops Test Procedures (Nov 13, 2026), Standard Dev Test Procedure",
+      "options": [
+        {
+          "label": "Correct software on truck",
+          "short": "SW ✓",
+          "type": "success",
+          "next": "sl_p4"
+        },
+        {
+          "label": "Deploy failed or stuck",
+          "short": "Deploy",
+          "type": "fail",
+          "next": "sl_r_sw"
+        },
+        {
+          "label": "Pre-deploy check failed",
+          "short": "Precheck",
+          "type": "fail",
+          "next": "sl_r_pre3"
+        },
+        {
+          "label": "Mobile App won't deploy",
+          "short": "Mobile App",
+          "type": "fail",
+          "next": "sl_r_mob"
+        },
+        {
+          "label": "T/S Something Else",
+          "short": "T/S",
+          "type": "ts",
+          "next": "sl_ts_p3"
+        }
+      ]
+    },
+    "sl_r_sw": {
+      "type": "route",
+      "text": "Software pull",
+      "tree": "sw_pull",
+      "returnTo": "sl_p3"
+    },
+    "sl_r_pre3": {
+      "type": "route",
+      "text": "Pre-deploy checks",
+      "tree": "precheck",
+      "returnTo": "sl_p3"
+    },
+    "sl_r_mob": {
+      "type": "route",
+      "text": "Aurora Mobile App",
+      "tree": "mobile_app",
+      "returnTo": "sl_p3"
+    },
+    "sl_p4": {
+      "type": "question",
+      "phase": "Phase 4 · Calibration",
+      "text": "Does the ticket call for DTV?",
+      "help": "Only run Drive-Thru Verification if the ticket or VRE asks for it.",
+      "done_when": "DTV isn't needed, or it passed.",
+      "tapp_changed": false,
+      "source": "Standard Dev Ops Test Procedures (Nov 13, 2026), Drive Thru Verification",
+      "options": [
+        {
+          "label": "Not required, or DTV passed",
+          "short": "Cal ✓",
+          "type": "success",
+          "next": "sl_p5"
+        },
+        {
+          "label": "Run DTV now",
+          "short": "Run DTV",
+          "type": "fail",
+          "next": "sl_r_cal"
+        },
+        {
+          "label": "T/S Something Else",
+          "short": "T/S",
+          "type": "ts",
+          "next": "sl_ts_p4"
+        }
+      ]
+    },
+    "sl_r_cal": {
+      "type": "route",
+      "text": "Scout Calibration Procedure",
+      "tree": "scout_cal",
+      "returnTo": "sl_p4"
+    },
+    "sl_p5": {
+      "type": "question",
+      "phase": "Phase 5 · Start the mission",
+      "text": "Clear annotations and start the mission",
+      "help": "Clear previous annotations. Press Start Mission for Autonomous, or use Change Stack Mode in the expanded Mission panel for the mode the ticket names. Pre-mission checks run on their own.",
+      "done_when": "The mission is started and a log is running in the right stack mode.",
+      "tapp_changed": false,
+      "source": "Standard Dev Ops Test Procedures (Nov 13, 2026), Standard Dev Test Procedure and Shadow Autonomy Procedure",
+      "options": [
+        {
+          "label": "Mission started, log running",
+          "short": "Mission ✓",
+          "type": "success",
+          "next": "sl_p6"
+        },
+        {
+          "label": "Pre-mission check failed",
+          "short": "Precheck",
+          "type": "fail",
+          "next": "sl_r_pre5"
+        },
+        {
+          "label": "Module red, Scout crashed or froze",
+          "short": "Scout issue",
+          "type": "fail",
+          "next": "sl_r_scout"
+        },
+        {
+          "label": "Can't start the mission",
+          "short": "Can't start",
+          "type": "fail",
+          "next": "sl_r_scout"
+        },
+        {
+          "label": "T/S Something Else",
+          "short": "T/S",
+          "type": "ts",
+          "next": "sl_ts_p5"
+        }
+      ]
+    },
+    "sl_r_pre5": {
+      "type": "route",
+      "text": "Pre-mission checks",
+      "tree": "precheck",
+      "returnTo": "sl_p5"
+    },
+    "sl_r_scout": {
+      "type": "route",
+      "text": "Scout or module problem",
+      "tree": "scout_issue",
+      "returnTo": "sl_p5"
+    },
+    "sl_p6": {
+      "type": "question",
+      "phase": "Phase 6 · Localize and checklists",
+      "text": "Localize and clear checklists",
+      "help": "Localize and clear as many checklist items as you can. Trailer pose checklists can be ignored when bobtail. Ask the requestor or VRE which others are okay to ignore.",
+      "done_when": "The truck is localized, and every checklist item left is cleared or approved to ignore.",
+      "tapp_changed": false,
+      "source": "Standard Dev Ops Test Procedures (Nov 13, 2026), Standard Dev Test Procedure and Shadow Autonomy Procedure",
+      "options": [
+        {
+          "label": "Localized, checklists cleared",
+          "short": "Localized ✓",
+          "type": "success",
+          "next": "sl_p7"
+        },
+        {
+          "label": "Won't localize",
+          "short": "No localize",
+          "type": "fail",
+          "next": "sl_loc1"
+        },
+        {
+          "label": "Checklist won't clear",
+          "short": "Checklist",
+          "type": "fail",
+          "next": "sl_esc_check"
+        },
+        {
+          "label": "T/S Something Else",
+          "short": "T/S",
+          "type": "ts",
+          "next": "sl_ts_p6"
+        }
+      ]
+    },
+    "sl_loc1": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Realign",
+      "text": "Line up again",
+      "steps": [
+        "If you're starting from a launch pad, make sure you're on the pad itself, not in front of it or at a staging spot.",
+        "Line up with the painted lines.",
+        "Immobilize again: parking brake, wait 4 seconds, Neutral."
+      ],
+      "source": "Terminals SOP 500-009358-01 (rev Oct 13, 2026), Launching 6.3; TS: DTP-109800, DTP-96816, DTP-110741, DTP-105621",
+      "next": "sl_loc2",
+      "resolvedNext": "sl_p6"
+    },
+    "sl_loc2": {
+      "type": "action",
+      "authorizedRole": "VO",
+      "short": "Loop",
+      "text": "Drive a localization loop",
+      "steps": [
+        "Drive at least 165 ft with at least one 90° turn. Avoid unnecessary stops.",
+        "Check Scout shows the truck localized."
+      ],
+      "source": "Terminals SOP 500-009358-01 (rev Oct 13, 2026), Launching 6.2; TS: DTP-107859, DTP-110850, DTP-112377",
+      "next": "sl_esc_loc",
+      "resolvedNext": "sl_p6"
+    },
+    "sl_esc_loc": {
+      "type": "terminal",
+      "terminal": "ESCALATE_TS",
+      "text": "The truck still won't localize after realigning and a loop.",
+      "source": "Terminals SOP 500-009358-01 (rev Oct 13, 2026), Launching 6.2–6.3",
+      "handoffNote": "Tag the requestor from the VO ticket in this thread."
+    },
+    "sl_esc_check": {
+      "type": "terminal",
+      "terminal": "ESCALATE_TS",
+      "text": "A checklist item won't clear and isn't approved to ignore.",
+      "source": "Standard Dev Ops Test Procedures (Nov 13, 2026), Standard Dev Test Procedure",
+      "handoffNote": "Tag the requestor from the VO ticket in this thread. List each checklist item exactly as Scout shows it."
+    },
+    "sl_p7": {
+      "type": "question",
+      "phase": "Phase 7 · Goal and engage",
+      "text": "Set the goal and start the test",
+      "help": "Set the goal. If the mission needs autonomy on a dev build, do disengagement checks first.",
+      "done_when": "The test is running as the ticket describes.",
+      "tapp_changed": false,
+      "source": "Standard Dev Ops Test Procedures (Nov 13, 2026), Standard Dev Test Procedure",
+      "options": [
+        {
+          "label": "Test running",
+          "short": "Running ✓",
+          "type": "success",
+          "next": "sl_done"
+        },
+        {
+          "label": "Goal problems",
+          "short": "Goal",
+          "type": "fail",
+          "next": "sl_r_goal"
+        },
+        {
+          "label": "No ready state",
+          "short": "No ready",
+          "type": "fail",
+          "next": "sl_esc_ready"
+        },
+        {
+          "label": "T/S Something Else",
+          "short": "T/S",
+          "type": "ts",
+          "next": "sl_ts_p7"
+        }
+      ]
+    },
+    "sl_r_goal": {
+      "type": "route",
+      "text": "Scout goal setup",
+      "tree": "scout_goal",
+      "returnTo": "sl_p7"
+    },
+    "sl_esc_ready": {
+      "type": "terminal",
+      "terminal": "ESCALATE_TS",
+      "text": "No ready state for autonomy after the goal is set.",
+      "source": "Standard Dev Ops Test Procedures (Nov 13, 2026), Standard Dev Test Procedure",
+      "handoffNote": "Tag the requestor from the VO ticket in this thread."
+    },
+    "sl_done": {
+      "type": "terminal",
+      "terminal": "RESOLVED",
+      "text": "Test running. When you're done: stop the mission (or swap to IDLE), copy Scout notes into Results, update the ticket status, and post the offload screenshot in the dispatch thread.",
+      "source": "Standard Dev Ops Test Procedures (Nov 13, 2026), Standard Dev Test Procedure"
+    },
+    "sl_ts_p0": {
+      "type": "route",
+      "text": "Troubleshooting menu",
+      "tree": "tapp_step",
+      "returnTo": "sl_p0"
+    },
+    "sl_ts_p1": {
+      "type": "route",
+      "text": "Troubleshooting menu",
+      "tree": "tapp_step",
+      "returnTo": "sl_p1"
+    },
+    "sl_ts_p2": {
+      "type": "route",
+      "text": "Troubleshooting menu",
+      "tree": "tapp_step",
+      "returnTo": "sl_p2"
+    },
+    "sl_ts_p3": {
+      "type": "route",
+      "text": "Troubleshooting menu",
+      "tree": "tapp_step",
+      "returnTo": "sl_p3"
+    },
+    "sl_ts_p4": {
+      "type": "route",
+      "text": "Troubleshooting menu",
+      "tree": "tapp_step",
+      "returnTo": "sl_p4"
+    },
+    "sl_ts_p5": {
+      "type": "route",
+      "text": "Troubleshooting menu",
+      "tree": "tapp_step",
+      "returnTo": "sl_p5"
+    },
+    "sl_ts_p6": {
+      "type": "route",
+      "text": "Troubleshooting menu",
+      "tree": "tapp_step",
+      "returnTo": "sl_p6"
+    },
+    "sl_ts_p7": {
+      "type": "route",
+      "text": "Troubleshooting menu",
+      "tree": "tapp_step",
+      "returnTo": "sl_p7"
+    }
+  }
+}
