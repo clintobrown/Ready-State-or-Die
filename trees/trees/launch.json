@@ -3,7 +3,7 @@
   "id": "launch",
   "title": "Launch issue",
   "role": "category",
-  "version": "0.4.9",
+  "version": "0.4.10",
   "status": "DRAFT",
   "sourceDocs": [
     "DTP TS tickets via Glean, Jun–Oct 2026"
@@ -22,8 +22,8 @@
           "next": "ln_pbt"
         },
         {
-          "label": "Engage not confirmed, or launch timed out", "issue": "engage not confirmed or launch timed out",
-          "short": "Timed out",
+          "label": "Hit engage button on steering wheel, nothing happens", "issue": "engage not confirmed or launch timed out",
+          "short": "Engage: nothing",
           "next": "ln_eng_check"
         },
         {
