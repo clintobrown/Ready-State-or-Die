@@ -102,6 +102,11 @@ textarea{width:100%;min-height:96px;border:3px solid var(--line);border-radius:1
   .tsdock{transform:none;visibility:visible;top:76px;width:340px;border-left:4px solid var(--line)}
   main{margin-right:auto;margin-left:max(14px,calc((100vw - 340px - 760px)/2))}
 }
+figure.shot{margin:12px 0;display:flex;flex-direction:column;gap:6px}
+figure.shot img{width:100%;max-width:520px;height:auto;border:3px solid var(--line);border-radius:10px;display:block}
+figure.shot figcaption{font-size:16px;color:var(--sub)}
+figure.shot figcaption span{font-weight:800}
+.answers .btn.ts{margin-top:10px}
 details.src summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:800}
 details.src p{margin:4px 0 0}
 .done{border:3px solid var(--ok);border-left-width:10px;border-radius:10px;padding:8px 12px;font-size:19px;background:var(--card)}
@@ -263,11 +268,11 @@ function validateTree(t, knownIds){
     if(n.type==='question'){
       if(!Array.isArray(n.options)||!n.options.length) E.push(`${at} question needs at least one option`);
       else n.options.forEach((o,i)=>{ if(!o.label) E.push(`${at} option ${i+1} has no label`); if(!has(o.next)) E.push(`${at} option ${i+1} next "${o.next}" doesn't exist`);
-        if(o.type && !['success','fail','stop'].includes(o.type)) E.push(`${at} option ${i+1} type must be success, fail or stop`);
+        if(o.type && !['success','fail','stop','ts'].includes(o.type)) E.push(`${at} option ${i+1} type must be success, fail, ts or stop`);
         if(o.type && String(o.label).trim().split(/\s+/).length>6) W.push(`${at} button "${o.label}" is over 6 words`); });
       if(n.done_when){ const f=(n.options||[]).filter(o=>o.type==='fail' && !/^something else$/i.test(o.label)).length;
         if(f>5) W.push(`${at} has ${f} failure buttons; max is 5 plus Something else`);
-        if(!(n.options||[]).some(o=>o.type==='stop')) W.push(`${at} card has no STOP button`); }
+        if(!(n.options||[]).some(o=>o.type==='ts')) W.push(`${at} card has no T/S Something Else button`); }
     }
     if(n.type==='action'){
       if(n.authorizedRole!=='VO') E.push(`${at} authorizedRole must be "VO". Work a VO isn't authorized to do belongs behind ESCALATE_VRE`);
@@ -339,7 +344,7 @@ async function loadTrees(){
     data = lsGet(LS.cache,null); S.src = data ? 'Using saved copy' : 'Opened as a file: import tree files';
   }
   S.fetchedAt = data ? data.fetchedAt : null;
-  if(data && data.manifest){ S.tools = data.manifest.tools || DEFAULT_TOOLS; S.platforms = data.manifest.platforms || DEFAULT_PLATFORMS; S.terminals = data.manifest.terminals || DEFAULT_TERMINALS; S.launchTree = data.manifest.launchTree || 'launch_sequence'; }
+  if(data && data.manifest){ S.tools = data.manifest.tools || DEFAULT_TOOLS; S.platforms = data.manifest.platforms || DEFAULT_PLATFORMS; S.terminals = data.manifest.terminals || DEFAULT_TERMINALS; S.launchTree = data.manifest.launchTree || 'launch_sequence'; S.scoutLaunchTree = data.manifest.scoutLaunchTree || null; }
   if(data && data.fleet) S.fleet = data.fleet;
   const imp = lsGet(LS.imported, {trees:{}});
   const all = Object.assign({}, data ? data.trees : {}, imp.trees);
@@ -412,7 +417,7 @@ function startRun(treeId){
   if(!truck) miss.push('truck'); if(!trailer) miss.push('trailer'); if(!su.tool) miss.push('tool'); if(!su.platform) miss.push('platform');
   if(miss.length){ S.flag = true; render(); toast('Add ' + miss.join(', ') + ' first'); return; }
   const t = S.trees[treeId]; if(!t) return;
-  const term = treeId===S.launchTree ? (S.terminals.find(x=>x.id===su.terminal) || null) : null;
+  const term = isLaunch(treeId) ? (S.terminals.find(x=>x.id===su.terminal) || null) : null;
   if(term) prefs.lastTerminal = term.id;
   const bump = (arr,v) => [v, ...(arr||[]).filter(x=>x!==v)].slice(0,5);
   Object.assign(prefs, { lastTruck:truck, lastTrailer:trailer, lastTool:su.tool, lastPlatform:su.platform, recentTrucks:bump(prefs.recentTrucks,truck), recentTrailers:bump(prefs.recentTrailers,trailer) }); savePrefs();
@@ -558,15 +563,17 @@ function render(){
   const c=$('.crumbs'); if(c) c.scrollLeft = c.scrollWidth;
   window.scrollTo(0,0);
 }
+const isLaunch = id => id===S.launchTree || (!!S.scoutLaunchTree && id===S.scoutLaunchTree);
+const launchFor = tool => tool==='scout' && S.scoutLaunchTree && S.trees[S.scoutLaunchTree] ? S.scoutLaunchTree : S.launchTree;
 function tsDock(){
   const su=S.setup;
   const cats = S.order.map(id=>S.trees[id]).filter(t=>t.id==='tapp_step'
     && (!su.tool || !t.tools || t.tools.includes(su.tool))
     && (!su.platform || !t.platforms || t.platforms.includes(su.platform)));
-  const seqs = S.order.map(id=>S.trees[id]).filter(t=>t.role==='sequence' && t.id!==S.launchTree
+  const seqs = S.order.map(id=>S.trees[id]).filter(t=>t.role==='sequence' && !isLaunch(t.id)
     && (!su.tool || !t.tools || t.tools.includes(su.tool))
     && (!su.platform || !t.platforms || t.platforms.includes(su.platform)));
-  const items = [...seqs, ...cats];
+  const items = seqs;
   return `<button class="ts-fab" data-act="tsToggle" aria-expanded="${S.tsOpen}" aria-controls="tsdock">T/S</button>
   <aside id="tsdock" class="tsdock ${S.tsOpen?'open':''}" aria-label="Troubleshoot">
     <div class="ts-head"><h2>Troubleshoot</h2><button class="hbtn ts-close" data-act="tsToggle" aria-label="Close troubleshoot">✕</button></div>
@@ -644,7 +651,7 @@ function entryBody(){
     && (!su.tool || !t.tools || t.tools.includes(su.tool))
     && (!su.platform || !t.platforms || t.platforms.includes(su.platform)));
   const triage = null;
-  const seqs = S.order.map(id=>S.trees[id]).filter(t=>t.role==='sequence' && t.id!==S.launchTree);
+  const seqs = S.order.map(id=>S.trees[id]).filter(t=>t.role==='sequence' && !isLaunch(t.id));
   const bad = S.reports.filter(r=>r.errors.length).length;
   const r = S.resume;
   return `
@@ -667,6 +674,7 @@ function entryBody(){
 
 const resumes = n => !!(n.resolvedNext && (()=>{ const t=getNode(S.s.cur.tree,n.resolvedNext); return t && t.type!=='terminal'; })()) || !!(S.s.calls && S.s.calls.length);
 const rich = t => esc(t).replace(/\[([^\]]+)\]\((https:\/\/[^\s)]+)\)/g, '<a class="inl" href="$2" target="_blank" rel="noopener">$1</a>');
+const shot = n => n.image && n.image.src ? `<figure class="shot"><a href="${esc(n.image.src)}" target="_blank" rel="noopener"><img src="${esc(n.image.src)}" alt="${esc(n.image.alt||'')}" loading="lazy"></a>${n.image.caption?`<figcaption>${esc(n.image.caption)}<span> Tap to enlarge.</span></figcaption>`:''}</figure>` : '';
 const howBtn = n => [].concat(n.howto||[]).length ? `<details class="howto"><summary class="btn sm">Help me do this</summary><ol class="how">${[].concat(n.howto).map(x=>`<li>${rich(x)}</li>`).join('')}</ol></details>` : '';
 const linkBtn = n => n.link && /^https:\/\//.test(n.link.url||'') ? `<a class="btn sm" href="${esc(n.link.url)}" target="_blank" rel="noopener" data-act="openLink">${esc(n.link.label)} ↗</a><p class="help">Opens in a new tab and copies the truck ID, ready to paste into the search.</p>` : '';
 const copyLabel = () => S.s && S.s.outcome==='ESCALATE_DISPATCH' ? 'Copy message for Dispatch' : 'Copy for TS thread';
@@ -679,12 +687,12 @@ function runBody(){
     const qn = s.steps.filter(x=>x.kind==='question').length + 1;
     const opts = (n.options||[]).map((o,i)=>Object.assign({_i:i},o)).filter(fits);
     if(v.done_when){
-      const cls = o => o.type==='success' ? 'ok' : o.type==='stop' ? 'bad stop' : 'ans';
+      const cls = o => o.type==='success' ? 'ok' : o.type==='stop' ? 'bad stop' : o.type==='ts' ? 'sig ts' : 'ans';
       return `<p class="step-no">${esc(n.phase||'')}</p>
         ${n.tapp_changed?`<span class="badge">Updated TApp: this screen changed</span>`:''}
         <h1 class="q">${esc(v.text)}</h1>
         ${v.help?`<p class="help">${rich(v.help)}</p>`:''}
-        ${linkBtn(n)}${howBtn(n)}
+        ${shot(n)}${linkBtn(n)}${howBtn(n)}
         <div class="done"><b>Done when</b>${esc(v.done_when)}</div>
         ${phBanner(n)}
         <div class="answers">${opts.map(o=>`<button class="btn ${cls(o)}" data-act="ans" data-arg="${o._i}">${esc(o.label)}</button>`).join('')}</div>`;
@@ -712,7 +720,7 @@ function runBody(){
       <h1 class="q">${esc(v.text)}</h1>
       ${(v.steps||[]).length?`<ol class="steps">${v.steps.map(x=>`<li>${rich(x)}</li>`).join('')}</ol>`:''}
       ${v.caution?`<div class="caution">${esc(v.caution)}</div>`:''}
-      ${linkBtn(n)}${howBtn(n)}</div></section>
+      ${shot(n)}${linkBtn(n)}${howBtn(n)}</div></section>
       <div class="answers"><button class="btn sig" data-act="done">${esc(v.doneLabel||'Done, I did this')}</button><button class="btn sm" data-act="cant">I can't do this step</button></div>`;
   }
   if(n.type==='terminal' && n.terminal==='RESOLVED'){
@@ -721,7 +729,7 @@ function runBody(){
       <div class="answers"><button class="btn pri" data-act="newrun">Start a new run</button><button class="btn sm" data-act="copy">Copy run summary</button></div>`;
   }
   if(n.type==='terminal'){
-    const where = n.stop ? '' : n.terminal==='ESCALATE_DISPATCH' ? 'Send this to Dispatch.' : 'Start a /vrehelp thread and paste this.';
+    const where = n.stop ? '' : n.terminal==='ESCALATE_DISPATCH' ? 'Send this to Dispatch.' : s.tool==='scout' ? 'Start a /vrehelp thread, paste this, and tag the requestor from the VO ticket.' : 'Start a /vrehelp thread and paste this.';
     return `<div class="term bad">${n.stop?'STOP. Don\'t touch.':esc(ESC_LABEL[n.terminal]||'Escalate')}${n.stop?`<small>${esc(v.text)}</small>`:''}</div>
       ${n.stop && n.handoffNote?`<div class="caution">${esc(n.handoffNote)}</div>`:''}
       <div class="field-label">Copy and paste this</div>
@@ -792,7 +800,7 @@ const A = {
   cancelVeh(kind){ S.manual[kind]=false; render(); },
   plat(id){ S.setup.platform=id; render(); },
   start(id){ S.tsOpen=false; startRun(id); },
-  terminal(id){ S.setup.terminal=id; startRun(S.launchTree); },
+  terminal(id){ S.setup.terminal=id; startRun(launchFor(S.setup.tool)); },
   tsToggle(){ S.tsOpen=!S.tsOpen; render(); },
   resume(){ S.s=S.resume; S.resume=null; S.screen='run'; if(!S.s.outcome) wake(true); render(); },
   discard(){ const r=S.resume; if(r.steps.length){ r.outcome='ABANDONED'; r.endedAt=Date.now(); upsertHistory(r); } S.resume=null; lsSet(LS.active,null); render(); },
@@ -800,7 +808,7 @@ const A = {
     const n=curNode(), o=n.options[+i], v=view(n);
     snapshot();
     S.s.steps.push({ kind:'question', tree:S.s.cur.tree, node:n.id, text:v.text, answer:o.label, short:o.short||o.label, issue:o.issue||'', at:Date.now(), placeholder:isPh(n), draft:isDraft(n) });
-    if(n.phase){ S.s.at = `${n.phase}: ${v.text}`; if(o.type==='fail'||o.type==='stop') S.s.failure = o.label; }
+    if(n.phase){ S.s.at = `${n.phase}: ${v.text}`; if(o.type==='fail'||o.type==='stop'||o.type==='ts') S.s.failure = o.label; }
     if(n.capture) (S.s.ctx = S.s.ctx || {})[n.capture] = o.label;
     goto(o.next);
   },
