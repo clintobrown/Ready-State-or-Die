@@ -34,6 +34,7 @@
     "scout_cal.json",
     "startup.json",
     "launch_sequence.json",
+    "scout_launch.json",
     "launch.json",
     "scout_goal.json",
     "precheck.json",
@@ -115,5 +116,6 @@
       "name": "Laredo: Hirschbach (Driscoll's)",
       "city": "Laredo, TX"
     }
-  ]
+  ],
+  "scoutLaunchTree": "scout_launch"
 }
