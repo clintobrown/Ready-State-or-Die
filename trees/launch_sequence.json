@@ -3,7 +3,7 @@
   "id": "launch_sequence",
   "title": "Launch a truck",
   "role": "sequence",
-  "version": "0.4.7",
+  "version": "0.5.0",
   "status": "DRAFT",
   "sourceDocs": [
     "Terminals SOP 500-009358-01 (rev Oct 13, 2026)",
@@ -15,7 +15,11 @@
   ],
   "start": "ls_p0",
   "nodes": {
-    "ls_p0": { "link": {"label": "Open ATMS", "url": "https://aurora-tms.lovable.app/auth"},
+    "ls_p0": {
+      "link": {
+        "label": "Open ATMS",
+        "url": "https://aurora-tms.lovable.app/auth"
+      },
       "type": "question",
       "phase": "Phase 0 · ATMS",
       "text": "Confirm in ATMS that your truck has an order leaving {terminal}",
@@ -31,16 +35,10 @@
           "next": "ls_p1"
         },
         {
-          "label": "Something else",
-          "short": "Other",
-          "type": "fail",
-          "next": "ls_esc_dispatch"
-        },
-        {
-          "label": "STOP, DON'T TOUCH",
-          "short": "STOP",
-          "type": "stop",
-          "next": "ls_stop"
+          "label": "T/S Something Else",
+          "short": "T/S",
+          "type": "ts",
+          "next": "ls_r_ts_p0"
         }
       ]
     },
@@ -66,21 +64,33 @@
           "next": "ls_esc_env"
         },
         {
-          "label": "STOP, DON'T TOUCH",
-          "short": "STOP",
-          "type": "stop",
-          "next": "ls_stop"
+          "label": "T/S Something Else",
+          "short": "T/S",
+          "type": "ts",
+          "next": "ls_r_ts_p1"
         }
       ]
     },
-    "ls_esc_env": { "phrase": "Truck is in the wrong cloud environment, needs moving to the correct one", "details": ["Screenshot: the /checkenv result showing the current environment."],
+    "ls_esc_env": {
+      "phrase": "Truck is in the wrong cloud environment, needs moving to the correct one",
+      "details": [
+        "Screenshot: the /checkenv result showing the current environment."
+      ],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "Stop. The truck is in the wrong environment. Open a VRE thread and paste the summary below.",
       "source": "VO process update (Nov 4, 2026): /checkenv",
       "handoffNote": "Request: put this vehicle in the correct cloud environment. Once it's in the correct environment, the VO will perform a Cold Start. Reply in thread when done."
     },
-    "ls_p2": { "variants": [{"when": {"platform": "peterbilt"}, "help": "Turn on pECU (then rECU, if present). Use shore power and ethernet if available. Start the engine and boot the Aurora Driver."}],
+    "ls_p2": {
+      "variants": [
+        {
+          "when": {
+            "platform": "peterbilt"
+          },
+          "help": "Turn on pECU (then rECU, if present). Use shore power and ethernet if available. Start the engine and boot the Aurora Driver."
+        }
+      ],
       "type": "question",
       "phase": "Phase 2 · Computes",
       "text": "Start the truck and bring computes up",
@@ -114,20 +124,26 @@
           "next": "ls_r_compute"
         },
         {
-          "label": "Something else",
-          "short": "Other",
-          "type": "fail",
+          "label": "T/S Something Else",
+          "short": "T/S",
+          "type": "ts",
           "next": "ls_r_ts_p2"
-        },
-        {
-          "label": "STOP, DON'T TOUCH",
-          "short": "STOP",
-          "type": "stop",
-          "next": "ls_stop"
         }
       ]
     },
-    "ls_c1": { "variants": [{"when": {"platform": "peterbilt"}, "steps": ["Check every power cutoff switch is in the run position.", "Check pECU (and rECU, if present) are on.", "Wait for TApp to reconnect."]}],
+    "ls_c1": {
+      "variants": [
+        {
+          "when": {
+            "platform": "peterbilt"
+          },
+          "steps": [
+            "Check every power cutoff switch is in the run position.",
+            "Check pECU (and rECU, if present) are on.",
+            "Wait for TApp to reconnect."
+          ]
+        }
+      ],
       "type": "action",
       "authorizedRole": "VO",
       "short": "Cutoff switches",
@@ -227,7 +243,11 @@
         }
       ]
     },
-    "ls_esc_conn": { "phrase": "Truck won't connect in TApp after the switch check and a cold start", "details": ["Screenshot: TApp showing the truck disconnected."],
+    "ls_esc_conn": {
+      "phrase": "Truck won't connect in TApp after the switch check and a cold start",
+      "details": [
+        "Screenshot: TApp showing the truck disconnected."
+      ],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "Truck won't connect after the switch check and one cold start.",
@@ -261,7 +281,11 @@
       "next": "ls_esc_disk",
       "resolvedNext": "ls_p3"
     },
-    "ls_esc_disk": { "phrase": "Logging disk light still off after two reseats", "details": ["Photo: the logging disk lights. Say which one is dark."],
+    "ls_esc_disk": {
+      "phrase": "Logging disk light still off after two reseats",
+      "details": [
+        "Photo: the logging disk lights. Say which one is dark."
+      ],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "Logging disk light still off after two reseats.",
@@ -301,24 +325,10 @@
           "next": "ls_r_cal"
         },
         {
-          "label": "Something else",
-          "short": "Other",
-          "type": "fail",
+          "label": "T/S Something Else",
+          "short": "T/S",
+          "type": "ts",
           "next": "ls_r_ts_p3"
-        },
-        {
-          "label": "STOP, DON'T TOUCH",
-          "short": "STOP",
-          "type": "stop",
-          "next": "ls_stop"
-        }
-      ],
-      "variants": [
-        {
-          "when": {
-            "tool": "scout"
-          },
-          "help": "If the truck has Remote Software Deploy turned on, pull software through TApp, not Scout. Leave Scout alone during the launch workflow unless your VO task says otherwise. Required tasks must be done; Suggested ones are optional."
         }
       ]
     },
@@ -334,7 +344,22 @@
       "tree": "calibration",
       "returnTo": "ls_p3"
     },
-    "ls_p4": { "howto": ["The trip only shows in TApp once the order is Confirmed in ATMS. Only Dispatch can confirm it.", "Open [ATMS](https://aurora-tms.lovable.app/auth) and find the order for your truck. It needs a tractor, a trailer, and an operator assigned.", "The BOL must be uploaded to the order. A trailer can't be checked into the yard without one.", "For an order leaving a terminal, the trailer must be checked in and show \"at site.\" This doesn't apply to pickups from a customer site.", "If the trip needs an EPTI (NVO trips), the inspection has to be done.", "Nothing on the order can be out of service. An out-of-service truck is dropped from the order automatically, and an out-of-service trailer can't be assigned.", "The truck must be eligible for the trip type. SVO, NVO, and Manual each need a truck cleared for that mode.", "The operators must be qualified for the trip type and seat. If one isn't, ATMS blocks the confirm and shows the reason under \"Can't confirm yet.\"", "If any of these is off, tell Dispatch which one."], "link": {"label": "Open ATMS", "url": "https://aurora-tms.lovable.app/auth"},
+    "ls_p4": {
+      "howto": [
+        "The trip only shows in TApp once the order is Confirmed in ATMS. Only Dispatch can confirm it.",
+        "Open [ATMS](https://aurora-tms.lovable.app/auth) and find the order for your truck. It needs a tractor, a trailer, and an operator assigned.",
+        "The BOL must be uploaded to the order. A trailer can't be checked into the yard without one.",
+        "For an order leaving a terminal, the trailer must be checked in and show \"at site.\" This doesn't apply to pickups from a customer site.",
+        "If the trip needs an EPTI (NVO trips), the inspection has to be done.",
+        "Nothing on the order can be out of service. An out-of-service truck is dropped from the order automatically, and an out-of-service trailer can't be assigned.",
+        "The truck must be eligible for the trip type. SVO, NVO, and Manual each need a truck cleared for that mode.",
+        "The operators must be qualified for the trip type and seat. If one isn't, ATMS blocks the confirm and shows the reason under \"Can't confirm yet.\"",
+        "If any of these is off, tell Dispatch which one."
+      ],
+      "link": {
+        "label": "Open ATMS",
+        "url": "https://aurora-tms.lovable.app/auth"
+      },
       "type": "question",
       "phase": "Phase 4 · Trip",
       "text": "Confirm the trip is ready in TApp",
@@ -368,16 +393,10 @@
           "next": "ls_esc_disp_done"
         },
         {
-          "label": "Something else",
-          "short": "Other",
-          "type": "fail",
-          "next": "ls_esc_dispatch"
-        },
-        {
-          "label": "STOP, DON'T TOUCH",
-          "short": "STOP",
-          "type": "stop",
-          "next": "ls_stop"
+          "label": "T/S Something Else",
+          "short": "T/S",
+          "type": "ts",
+          "next": "ls_r_ts_p4"
         }
       ]
     },
@@ -394,7 +413,11 @@
       "next": "ls_t2",
       "resolvedNext": "ls_p51"
     },
-    "ls_t2": { "link": {"label": "Open ATMS", "url": "https://aurora-tms.lovable.app/auth"},
+    "ls_t2": {
+      "link": {
+        "label": "Open ATMS",
+        "url": "https://aurora-tms.lovable.app/auth"
+      },
       "type": "action",
       "authorizedRole": "VO",
       "short": "Terminal",
@@ -408,7 +431,11 @@
       "next": "ls_esc_disp_trip",
       "resolvedNext": "ls_p51"
     },
-    "ls_esc_disp_trip": { "phrase": "Trip isn't showing in TApp for this truck", "details": ["Screenshot: the TApp Trips tab, and the order in ATMS."],
+    "ls_esc_disp_trip": {
+      "phrase": "Trip isn't showing in TApp for this truck",
+      "details": [
+        "Screenshot: the TApp Trips tab, and the order in ATMS."
+      ],
       "type": "terminal",
       "terminal": "ESCALATE_DISPATCH",
       "text": "The trip still isn't showing. This is a Dispatch fix, not a TS thread.",
@@ -428,14 +455,22 @@
       "next": "ls_esc_stale",
       "resolvedNext": "ls_p51"
     },
-    "ls_esc_stale": { "phrase": "A stale trip is blocking the new trip in TApp", "details": ["Screenshot: the stale trip in TApp."],
+    "ls_esc_stale": {
+      "phrase": "A stale trip is blocking the new trip in TApp",
+      "details": [
+        "Screenshot: the stale trip in TApp."
+      ],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "A stale trip is blocking this one. VRE has to clear it.",
       "source": "TS: DTP-111692, DTP-102071, DTP-105733",
       "handoffNote": "Likely ask: move the stack to IDLE, then refresh TApp (DTP-111692), or clear the blocking trip with find-blockers (DTP-102071)."
     },
-    "ls_esc_disp_done": { "phrase": "Order shows completed before this leg ran", "details": ["Screenshot: the order status in ATMS."],
+    "ls_esc_disp_done": {
+      "phrase": "Order shows completed before this leg ran",
+      "details": [
+        "Screenshot: the order status in ATMS."
+      ],
       "type": "terminal",
       "terminal": "ESCALATE_DISPATCH",
       "text": "The order shows completed before this leg ran. Dispatch has to fix the order.",
@@ -482,16 +517,10 @@
           "next": "ls_esc_release"
         },
         {
-          "label": "Something else",
-          "short": "Other",
-          "type": "fail",
+          "label": "T/S Something Else",
+          "short": "T/S",
+          "type": "ts",
           "next": "ls_r_ts_p51"
-        },
-        {
-          "label": "STOP, DON'T TOUCH",
-          "short": "STOP",
-          "type": "stop",
-          "next": "ls_stop"
         }
       ]
     },
@@ -508,7 +537,11 @@
       "next": "ls_esc_tds",
       "resolvedNext": "ls_p52"
     },
-    "ls_esc_tds": { "phrase": "Trip Data Sync still fails after a retry on ethernet", "details": ["Screenshot: the exact error text in TApp."],
+    "ls_esc_tds": {
+      "phrase": "Trip Data Sync still fails after a retry on ethernet",
+      "details": [
+        "Screenshot: the exact error text in TApp."
+      ],
       "type": "terminal",
       "terminal": "ESCALATE_TS",
       "text": "Trip Data Sync still fails after a retry on ethernet.",
@@ -528,14 +561,22 @@
       "next": "ls_esc_ts",
       "resolvedNext": "ls_p52"
     },
-    "ls_esc_disp_atlas": { "phrase": "Trip error says request support, do not retry", "details": ["Screenshot: the full error in TApp."],
+    "ls_esc_disp_atlas": {
+      "phrase": "Trip error says request support, do not retry",
+      "details": [
+        "Screenshot: the full error in TApp."
+      ],
       "type": "terminal",
       "terminal": "ESCALATE_DISPATCH",
       "text": "The error says to request support and not to retry. Dispatch regenerates the trip.",
       "source": "TS: DTP-109242, DTP-106173, DTP-104622",
       "handoffNote": "Ask Dispatch to regenerate the external trip with a valid pickup and drop-off; that moved the trip back to Preparing and cleared the atlas error (DTP-109242)."
     },
-    "ls_esc_release": { "phrase": "Permission check failed: software not of release", "details": ["Screenshot: the permission check error. Include the build ID."],
+    "ls_esc_release": {
+      "phrase": "Permission check failed: software not of release",
+      "details": [
+        "Screenshot: the permission check error. Include the build ID."
+      ],
       "type": "terminal",
       "terminal": "ESCALATE_TS",
       "text": "Permission check failed: software not of release.",
@@ -576,16 +617,10 @@
           "next": "ls_esc_bobtail"
         },
         {
-          "label": "Something else",
-          "short": "Other",
-          "type": "fail",
+          "label": "T/S Something Else",
+          "short": "T/S",
+          "type": "ts",
           "next": "ls_r_ts_p52"
-        },
-        {
-          "label": "STOP, DON'T TOUCH",
-          "short": "STOP",
-          "type": "stop",
-          "next": "ls_stop"
         }
       ]
     },
@@ -602,21 +637,33 @@
       "next": "ls_esc_wm",
       "resolvedNext": "ls_p53"
     },
-    "ls_esc_wm": { "phrase": "Weight entry says incorrect operating mode with the stack in Autonomous", "details": ["Screenshot: the error and the current stack mode."],
+    "ls_esc_wm": {
+      "phrase": "Weight entry says incorrect operating mode with the stack in Autonomous",
+      "details": [
+        "Screenshot: the error and the current stack mode."
+      ],
       "type": "terminal",
       "terminal": "ESCALATE_TS",
       "text": "Still 'incorrect operating mode' with the stack in Autonomous.",
       "source": "TS: DTP-109799, DTP-109560",
       "handoffNote": "Likely ask: reset the task to the Preparing stage (DTP-109799 workaround)."
     },
-    "ls_esc_spin": { "phrase": "Weight and KPRA submit times out", "details": ["Screenshot: the submit screen and any error (for example SIGNAL_TIMEOUT)."],
+    "ls_esc_spin": {
+      "phrase": "Weight and KPRA submit times out",
+      "details": [
+        "Screenshot: the submit screen and any error (for example SIGNAL_TIMEOUT)."
+      ],
       "type": "terminal",
       "terminal": "ESCALATE_TS",
       "text": "Weight and KPRA submit times out.",
       "source": "TS: DTP-112180, DTP-109570",
       "handoffNote": "Include the error if TApp shows one (e.g. SIGNAL_TIMEOUT)."
     },
-    "ls_esc_bobtail": { "phrase": "Can't submit weight for bobtail in TApp (mass cannot be zero)", "details": ["Screenshot: the error."],
+    "ls_esc_bobtail": {
+      "phrase": "Can't submit weight for bobtail in TApp (mass cannot be zero)",
+      "details": [
+        "Screenshot: the error."
+      ],
       "type": "terminal",
       "terminal": "ESCALATE_TS",
       "text": "Known bug: TApp can't submit weight for bobtail.",
@@ -639,16 +686,10 @@
           "next": "ls_p54"
         },
         {
-          "label": "Something else",
-          "short": "Other",
-          "type": "fail",
+          "label": "T/S Something Else",
+          "short": "T/S",
+          "type": "ts",
           "next": "ls_r_ts_p53"
-        },
-        {
-          "label": "STOP, DON'T TOUCH",
-          "short": "STOP",
-          "type": "stop",
-          "next": "ls_stop"
         }
       ]
     },
@@ -674,20 +715,18 @@
           "next": "ls_esc_diag"
         },
         {
-          "label": "Something else",
-          "short": "Other",
-          "type": "fail",
+          "label": "T/S Something Else",
+          "short": "T/S",
+          "type": "ts",
           "next": "ls_r_ts_p54"
-        },
-        {
-          "label": "STOP, DON'T TOUCH",
-          "short": "STOP",
-          "type": "stop",
-          "next": "ls_stop"
         }
       ]
     },
-    "ls_esc_diag": { "phrase": "Diagnostics present in TApp before launch", "details": ["Screenshot: the Diagnostics list in TApp."],
+    "ls_esc_diag": {
+      "phrase": "Diagnostics present in TApp before launch",
+      "details": [
+        "Screenshot: the Diagnostics list in TApp."
+      ],
       "type": "terminal",
       "terminal": "ESCALATE_VRE",
       "text": "Diagnostics are present. The SOP sends these to VRE.",
@@ -722,16 +761,10 @@
           "next": "ls_r_launch"
         },
         {
-          "label": "Something else",
-          "short": "Other",
-          "type": "fail",
+          "label": "T/S Something Else",
+          "short": "T/S",
+          "type": "ts",
           "next": "ls_r_ts_p55"
-        },
-        {
-          "label": "STOP, DON'T TOUCH",
-          "short": "STOP",
-          "type": "stop",
-          "next": "ls_stop"
         }
       ],
       "variants": [
@@ -820,32 +853,78 @@
       "text": "Launched. The trip is departing.",
       "source": "Launch Aid"
     },
-    "ls_esc_ts": { "phrase": "Launch blocked, no listed fix", "details": ["Screenshot: the TApp screen at the step that failed."],
+    "ls_esc_ts": {
+      "phrase": "Launch blocked, no listed fix",
+      "details": [
+        "Screenshot: the TApp screen at the step that failed."
+      ],
       "type": "terminal",
       "terminal": "ESCALATE_TS",
       "text": "No listed fix for this. Open a TS thread with the summary below.",
       "source": "Launch Aid escalation gate"
     },
-    "ls_esc_dispatch": { "phrase": "Order or trip problem is blocking launch", "details": ["Screenshot: the order in ATMS and the trip in TApp."],
-      "type": "terminal",
-      "terminal": "ESCALATE_DISPATCH",
-      "text": "This is an order or trip problem. Contact Dispatch, not TS.",
-      "source": "Launch Aid escalation gate"
+    "ls_r_ts_p2": {
+      "type": "route",
+      "text": "Troubleshooting menu",
+      "tree": "tapp_step",
+      "returnTo": "ls_p2"
     },
-    "ls_stop": { "phrase": "STOP called: safety, hardware or compute symptom. Truck immobilized, nothing touched", "details": ["Describe exactly what you saw or heard.", "Photo, only if it's safe to take one."],
-      "type": "terminal",
-      "terminal": "ESCALATE_VRE",
-      "text": "Stopped for a safety, hardware, or compute symptom. No fixes were tried.",
-      "source": "Terminals SOP 500-009358-01 (rev Oct 13, 2026), Launching 2.2 (OR-104 #10)",
-      "handoffNote": "Keep the truck immobilized (parking brake set, Neutral) and stay with it until VRE responds.",
-      "stop": true
+    "ls_r_ts_p3": {
+      "type": "route",
+      "text": "Troubleshooting menu",
+      "tree": "tapp_step",
+      "returnTo": "ls_p3"
     },
-    "ls_r_ts_p2": {"type": "route", "text": "Troubleshooting menu", "tree": "tapp_step", "returnTo": "ls_p2"},
-    "ls_r_ts_p3": {"type": "route", "text": "Troubleshooting menu", "tree": "tapp_step", "returnTo": "ls_p3"},
-    "ls_r_ts_p51": {"type": "route", "text": "Troubleshooting menu", "tree": "tapp_step", "returnTo": "ls_p51"},
-    "ls_r_ts_p52": {"type": "route", "text": "Troubleshooting menu", "tree": "tapp_step", "returnTo": "ls_p52"},
-    "ls_r_ts_p53": {"type": "route", "text": "Troubleshooting menu", "tree": "tapp_step", "returnTo": "ls_p53"},
-    "ls_r_ts_p54": {"type": "route", "text": "Troubleshooting menu", "tree": "tapp_step", "returnTo": "ls_p54"},
-    "ls_r_ts_p55": {"type": "route", "text": "Troubleshooting menu", "tree": "tapp_step", "returnTo": "ls_p55"}
-  }
+    "ls_r_ts_p51": {
+      "type": "route",
+      "text": "Troubleshooting menu",
+      "tree": "tapp_step",
+      "returnTo": "ls_p51"
+    },
+    "ls_r_ts_p52": {
+      "type": "route",
+      "text": "Troubleshooting menu",
+      "tree": "tapp_step",
+      "returnTo": "ls_p52"
+    },
+    "ls_r_ts_p53": {
+      "type": "route",
+      "text": "Troubleshooting menu",
+      "tree": "tapp_step",
+      "returnTo": "ls_p53"
+    },
+    "ls_r_ts_p54": {
+      "type": "route",
+      "text": "Troubleshooting menu",
+      "tree": "tapp_step",
+      "returnTo": "ls_p54"
+    },
+    "ls_r_ts_p55": {
+      "type": "route",
+      "text": "Troubleshooting menu",
+      "tree": "tapp_step",
+      "returnTo": "ls_p55"
+    },
+    "ls_r_ts_p0": {
+      "type": "route",
+      "text": "Troubleshooting menu",
+      "tree": "tapp_step",
+      "returnTo": "ls_p0"
+    },
+    "ls_r_ts_p1": {
+      "type": "route",
+      "text": "Troubleshooting menu",
+      "tree": "tapp_step",
+      "returnTo": "ls_p1"
+    },
+    "ls_r_ts_p4": {
+      "type": "route",
+      "text": "Troubleshooting menu",
+      "tree": "tapp_step",
+      "returnTo": "ls_p4"
+    }
+  },
+  "tools": [
+    "tapp"
+  ]
 }
