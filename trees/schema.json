@@ -29,7 +29,8 @@
     "role": {
       "enum": [
         "category",
-        "triage"
+        "triage",
+        "sequence"
       ],
       "default": "category",
       "description": "'triage' = the 'I'm not sure' tree. Exactly one should exist."
@@ -131,6 +132,9 @@
         },
         "caution": {
           "type": "string"
+        },
+        "done_when": {
+          "type": "string"
         }
       }
     },
@@ -178,6 +182,15 @@
             ]
           },
           "description": "Only show this answer on these platforms."
+        },
+        "type": {
+          "enum": [
+            "success",
+            "fail",
+            "stop",
+            "ts"
+          ],
+          "description": "Card button style. ts = orange T/S Something Else (opens the troubleshooting menu, returns to the card)."
         }
       }
     },
@@ -278,7 +291,9 @@
         "terminal": {
           "enum": [
             "RESOLVED",
-            "ESCALATE_VRE"
+            "ESCALATE_VRE",
+            "ESCALATE_TS",
+            "ESCALATE_DISPATCH"
           ],
           "description": "terminal only."
         },
@@ -296,23 +311,43 @@
         },
         "link": {
           "type": "object",
-          "required": ["label", "url"],
+          "required": [
+            "label",
+            "url"
+          ],
           "additionalProperties": false,
           "properties": {
-            "label": { "type": "string" },
-            "url": { "type": "string", "pattern": "^https://" }
+            "label": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string",
+              "pattern": "^https://"
+            }
           },
           "description": "question or action only. Adds a button that opens this address in a new tab and copies the run's truck ID to the clipboard."
         },
         "verify": {
           "type": "object",
           "additionalProperties": false,
-          "properties": { "text": { "type": "string" }, "yes": { "type": "string" }, "no": { "type": "string" } },
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "yes": {
+              "type": "string"
+            },
+            "no": {
+              "type": "string"
+            }
+          },
           "description": "action only, optional. Replaces the follow-up 'Did this resolve it?' and its two buttons, e.g. for a procedure whose outcome is pass or fail. 'yes' follows resolvedNext, 'no' follows next."
         },
         "howto": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "description": "question or action only. Detailed instructions shown when the operator taps 'Help me do this': exactly where to look and what a good or bad result looks like."
         },
         "phrase": {
@@ -325,6 +360,42 @@
             "type": "string"
           },
           "description": "escalation terminal only. Extra lines for the Additional Details box, e.g. what to screenshot. The app adds truck, trailer, platform, tool and the fixes tried."
+        },
+        "phase": {
+          "type": "string"
+        },
+        "done_when": {
+          "type": "string"
+        },
+        "tapp_changed": {
+          "type": "boolean"
+        },
+        "capture": {
+          "type": "string"
+        },
+        "returnTo": {
+          "type": "string"
+        },
+        "stop": {
+          "type": "boolean"
+        },
+        "image": {
+          "type": "object",
+          "description": "Picture under the step; src relative to site root, e.g. trees/scout_cal_panel.png",
+          "properties": {
+            "src": {
+              "type": "string"
+            },
+            "alt": {
+              "type": "string"
+            },
+            "caption": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "src"
+          ]
         }
       },
       "allOf": [
