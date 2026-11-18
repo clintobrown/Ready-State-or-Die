@@ -66,6 +66,16 @@ h2{font-size:22px;font-weight:900;margin:8px 0 0}
 .btn.sel{background:var(--fg);color:var(--bg)}
 .btn[disabled]{opacity:.4}
 .btn .tag{margin-left:auto;font-size:14px;font-weight:900;background:var(--sig);color:#000;border:2px solid #000;border-radius:6px;padding:2px 6px;flex:none}
+.toolpick{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.toolcard{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8px;min-height:44px;padding:12px 10px 10px;
+  background:var(--card);color:var(--fg);border:3px solid var(--line);border-radius:14px;cursor:pointer;font:inherit;opacity:.72}
+.toolcard img{width:100%;max-width:200px;height:120px;object-fit:contain;display:block;pointer-events:none}
+.toolcard span{font-size:24px;font-weight:900;letter-spacing:.02em}
+.toolcard.on{opacity:1;border-color:var(--ok);box-shadow:0 0 0 2px var(--ok),0 0 22px color-mix(in srgb,var(--ok) 45%,transparent)}
+.toolcard.on span{color:var(--ok)}
+.toolcard:focus-visible{outline:4px solid var(--focus);outline-offset:3px}
+@media (max-width:380px){.toolcard img{height:90px}.toolcard span{font-size:20px}}
+.toolhint{margin:2px 0 0}
 .seg{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}
 .field-label{font-size:19px;font-weight:900;margin:10px 0 -4px}
 .field-label.miss{color:var(--bad)}
@@ -563,6 +573,8 @@ function render(){
   const c=$('.crumbs'); if(c) c.scrollLeft = c.scrollWidth;
   window.scrollTo(0,0);
 }
+const TOOL_IMG = { tapp:'image/tool_tapp.png', scout:'image/tool_scout.png' };
+const toolHint = id => id==='scout' ? 'Dev mission: VO ticket and Scout steps.' : id==='tapp' ? 'Commercial launch: ATMS order and TApp steps.' : 'Pick the tool you\'re launching with.';
 const isLaunch = id => id===S.launchTree || (!!S.scoutLaunchTree && id===S.scoutLaunchTree);
 const launchFor = tool => tool==='scout' && S.scoutLaunchTree && S.trees[S.scoutLaunchTree] ? S.scoutLaunchTree : S.launchTree;
 function tsDock(){
@@ -662,8 +674,9 @@ function entryBody(){
   ${vehField('truck')}
   <label class="field-label ${f&&!su.trailer?'miss':''}" for="sel-trailer">Trailer</label>
   ${vehField('trailer')}
-  <div class="field-label ${f&&!su.tool?'miss':''}">Tool</div>
-  <div class="seg">${S.tools.map(t=>`<button class="btn sm ${su.tool===t.id?'sel':''}" data-act="tool" data-arg="${esc(t.id)}" aria-pressed="${su.tool===t.id}">${esc(t.label)}</button>`).join('')}</div>
+  <div class="field-label ${f&&!su.tool?'miss':''}" id="toolLabel">Tool</div>
+  <div class="toolpick" role="group" aria-label="Tool">${S.tools.map(t=>`<button class="toolcard ${su.tool===t.id?'on':''}" data-act="tool" data-arg="${esc(t.id)}" aria-pressed="${su.tool===t.id}">${TOOL_IMG[t.id]?`<img src="${TOOL_IMG[t.id]}" alt="" loading="lazy">`:''}<span>${esc(t.label)}</span></button>`).join('')}</div>
+  <p class="help toolhint" id="toolHint">${toolHint(su.tool)}</p>
   <div class="field-label ${f&&!su.platform?'miss':''}">Platform</div>
   <div class="seg">${S.platforms.map(p=>`<button class="btn sm ${su.platform===p.id?'sel':''}" data-act="plat" data-arg="${esc(p.id)}" aria-pressed="${su.platform===p.id}">${esc(p.label)}</button>`).join('')}</div>
   ${su.platform ? `<h2>Where are you launching from?</h2>
@@ -789,7 +802,15 @@ const A = {
   home(){ if(S.screen==='run') return; S.screen='entry'; render(); },
   nav(arg){ if(S.screen==='run') return; S.screen=arg; render(); },
   theme(){ prefs.theme = prefs.theme==='sun'?'night':'sun'; savePrefs(); render(); },
-  tool(id){ S.setup.tool=id; render(); },
+  tool(id){
+    S.setup.tool=id;
+    document.querySelectorAll('.toolcard').forEach(b=>{ const on=b.dataset.arg===id; b.classList.toggle('on',on); b.setAttribute('aria-pressed',on); });
+    const h=$('#toolHint'); if(h) h.textContent=toolHint(id);
+    const l=$('#toolLabel'); if(l) l.classList.remove('miss');
+    const d=$('#tsdock'), fab=$('.ts-fab');
+    if(d){ const tmp=document.createElement('div'); tmp.innerHTML=tsDock(); const nd=tmp.querySelector('#tsdock'); if(nd) d.innerHTML=nd.innerHTML; }
+    if(!$('.toolcard')) render();
+  },
   addVeh(kind){
     const el=$('#man-'+kind), v=(el&&el.value||'').trim();
     if(!v){ toast('Type the '+kind+' number first'); return; }
