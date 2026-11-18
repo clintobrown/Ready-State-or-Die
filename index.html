@@ -76,6 +76,11 @@ h2{font-size:22px;font-weight:900;margin:8px 0 0}
 .toolcard:focus-visible{outline:4px solid var(--focus);outline-offset:3px}
 @media (max-width:380px){.toolcard img{height:90px}.toolcard span{font-size:20px}}
 .toolhint{margin:2px 0 0}
+.platpick{grid-template-columns:repeat(3,1fr);gap:10px}
+.platpick .toolcard{padding:10px 6px 8px}
+.platpick .toolcard img{height:78px;max-width:100%}
+.platpick .toolcard span{font-size:18px}
+@media (max-width:380px){.platpick .toolcard img{height:58px}.platpick .toolcard span{font-size:15px}}
 .seg{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}
 .field-label{font-size:19px;font-weight:900;margin:10px 0 -4px}
 .field-label.miss{color:var(--bad)}
@@ -573,6 +578,7 @@ function render(){
   const c=$('.crumbs'); if(c) c.scrollLeft = c.scrollWidth;
   window.scrollTo(0,0);
 }
+const PLAT_IMG = { volvo:'image/plat_volvo.png', international:'image/plat_international.png', peterbilt:'image/plat_peterbilt.png' };
 const TOOL_IMG = { tapp:'image/tool_tapp.png', scout:'image/tool_scout.png' };
 const toolHint = id => id==='scout' ? 'Dev mission: VO ticket and Scout steps.' : id==='tapp' ? 'Commercial launch: ATMS order and TApp steps.' : 'Pick the tool you\'re launching with.';
 const isLaunch = id => id===S.launchTree || (!!S.scoutLaunchTree && id===S.scoutLaunchTree);
@@ -678,7 +684,7 @@ function entryBody(){
   <div class="toolpick" role="group" aria-label="Tool">${S.tools.map(t=>`<button class="toolcard ${su.tool===t.id?'on':''}" data-act="tool" data-arg="${esc(t.id)}" aria-pressed="${su.tool===t.id}">${TOOL_IMG[t.id]?`<img src="${TOOL_IMG[t.id]}" alt="" loading="lazy">`:''}<span>${esc(t.label)}</span></button>`).join('')}</div>
   <p class="help toolhint" id="toolHint">${toolHint(su.tool)}</p>
   <div class="field-label ${f&&!su.platform?'miss':''}">Platform</div>
-  <div class="seg">${S.platforms.map(p=>`<button class="btn sm ${su.platform===p.id?'sel':''}" data-act="plat" data-arg="${esc(p.id)}" aria-pressed="${su.platform===p.id}">${esc(p.label)}</button>`).join('')}</div>
+  <div class="toolpick platpick" role="group" aria-label="Platform">${S.platforms.map(p=>`<button class="toolcard ${su.platform===p.id?'on':''}" data-act="plat" data-arg="${esc(p.id)}" aria-pressed="${su.platform===p.id}">${PLAT_IMG[p.id]?`<img src="${PLAT_IMG[p.id]}" alt="" loading="lazy">`:''}<span>${esc(p.label)}</span></button>`).join('')}</div>
   ${su.platform ? `<h2>Where are you launching from?</h2>
   <div class="list">${S.terminals.map(x=>`<button class="btn ans term-btn ${prefs.lastTerminal===x.id?'sel':''}" data-act="terminal" data-arg="${esc(x.id)}"><span>${esc(x.name)}<small>${esc(x.id)}${x.city?` · ${esc(x.city)}`:''}</small></span></button>`).join('')}</div>`
   : `<p class="help">Pick the platform to choose your launch terminal.</p>`}
@@ -819,7 +825,7 @@ const A = {
     S.setup[kind]=v; S.manual[kind]=false; render(); toast('Added '+v);
   },
   cancelVeh(kind){ S.manual[kind]=false; render(); },
-  plat(id){ S.setup.platform=id; render(); },
+  plat(id){ const y=window.scrollY; S.setup.platform=id; render(); window.scrollTo(0,y); },
   start(id){ S.tsOpen=false; startRun(id); },
   terminal(id){ S.setup.terminal=id; startRun(launchFor(S.setup.tool)); },
   tsToggle(){ S.tsOpen=!S.tsOpen; render(); },
