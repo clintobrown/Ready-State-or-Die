@@ -31,8 +31,6 @@
     "tapp_step.json",
     "compute_ready.json",
     "stack_control.json",
-    "scout_cal.json",
-    "startup.json",
     "launch_sequence.json",
     "scout_launch.json",
     "launch.json",
