@@ -596,9 +596,6 @@ function tsDock(){
   <aside id="tsdock" class="tsdock ${S.tsOpen?'open':''}" aria-label="Troubleshoot">
     <div class="ts-head"><h2>Troubleshoot</h2><button class="hbtn ts-close" data-act="tsToggle" aria-label="Close troubleshoot">✕</button></div>
     <div class="ts-ring" aria-hidden="true">T/S</div>
-    <p class="help">Something already stuck? Pick what you need instead of the launch steps.</p>
-    ${items.length ? `<div class="list">${items.map(t=>`<button class="btn ans" data-act="start" data-arg="${esc(t.id)}">${esc(t.title)}${t.status!=='VERIFIED'?`<span class="tag">${esc(t.status||'PLACEHOLDER')}</span>`:''}</button>`).join('')}</div>`
-      : `<div class="banner"><b>No fault trees loaded.</b><span class="help">${esc(S.src)}.</span><button class="btn sm pri" data-act="import">Import tree files</button></div>`}
   </aside>`;
 }
 function header(){
