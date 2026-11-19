@@ -652,7 +652,7 @@ function vehField(kind){
   if(kind==='trailer') o += opt('BOBTAIL','Bobtail (no trailer)');
   if(recent.length) o += `<optgroup label="Recent">${recent.map(id=>opt(id,id)).join('')}</optgroup>`;
   if(custom.length) o += `<optgroup label="Added on this device">${custom.map(id=>opt(id,id)).join('')}</optgroup>`;
-  const groups = {}; list.forEach(v=>{ (groups[v.loc]=groups[v.loc]||[]).push(v); });
+  /* Location headers only when live: needs v.liveLoc + v.liveAt (ISO) under 10 min old. fleet.json "loc" is a sheet snapshot, so it is never shown. */ const LIVE_MS = 10*60*1000, live = v => !!(v.liveLoc && v.liveAt && (Date.now() - Date.parse(v.liveAt)) < LIVE_MS); const groups = {}; list.forEach(v=>{ const g = live(v) ? v.liveLoc : (kind==='truck' ? 'All trucks' : 'All trailers'); (groups[g]=groups[g]||[]).push(v); });
   for(const [loc,vs] of Object.entries(groups)) o += `<optgroup label="${esc(loc)}">${vs.map(v=>opt(v.id, v.desc ? `${v.id} · ${v.desc}` : v.id)).join('')}</optgroup>`;
   if(cur && !marked) o += opt(cur,cur);
   const sel = `<select id="sel-${kind}" class="big ${f&&!cur?'miss':''}">${o}</select>`;
