@@ -3,7 +3,7 @@
   "id": "scout_launch",
   "title": "Launch a dev mission",
   "role": "sequence",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "status": "DRAFT",
   "tools": [
     "scout"
@@ -11,7 +11,7 @@
   "sourceDocs": [
     "Standard Dev Ops Test Procedures (Nov 13, 2026)",
     "Terminals SOP 500-009358-01 (rev Oct 13, 2026)",
-    "Existing READY STATE or DIE trees (sw_pull, precheck, mobile_app, scout_issue, scout_goal, scout_cal)"
+    "Existing READY STATE or DIE trees (sw_pull, precheck, mobile_app, scout_issue, scout_goal)"
   ],
   "start": "sl_p0",
   "nodes": {
@@ -385,24 +385,12 @@
           "next": "sl_p5"
         },
         {
-          "label": "Run DTV now",
-          "short": "Run DTV",
-          "type": "fail",
-          "next": "sl_r_cal"
-        },
-        {
           "label": "T/S Something Else",
           "short": "T/S",
           "type": "ts",
           "next": "sl_ts_p4"
         }
       ]
-    },
-    "sl_r_cal": {
-      "type": "route",
-      "text": "Scout Calibration Procedure",
-      "tree": "scout_cal",
-      "returnTo": "sl_p4"
     },
     "sl_p5": {
       "type": "question",
